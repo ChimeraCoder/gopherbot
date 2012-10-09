@@ -18,14 +18,7 @@ var config *Config
 
 func main() {
 	conn, client := setup()
-
-	defer func() {
-		if x := recover(); x != nil {
-			log.Printf("Error: %x", x)
-		}
-
-		shutdown(conn, client)
-	}()
+	defer shutdown(conn, client)
 
 	// Perform handshake.
 	log.Printf("Performing handshake...")
