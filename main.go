@@ -13,14 +13,23 @@ import (
 	"path/filepath"
 )
 
+var config *Config
+
 func main() {
-	cfg, conn, client := setup()
-	defer shutdown(cfg, conn, client)
+	conn, client := setup()
+
+	defer func() {
+		if x := recover(); x != nil {
+			log.Printf("Error: %x", x)
+		}
+
+		shutdown(conn, client)
+	}()
 
 	// Perform handshake.
 	log.Printf("Performing handshake...")
-	client.Login(cfg.Nickname)
-	client.Nick(cfg.Nickname, cfg.NickservPassword)
+	client.Login(config.Nickname)
+	client.Nick(config.Nickname, config.NickservPassword)
 
 	// Main data loop.
 	log.Printf("Entering data loop...")
@@ -36,12 +45,12 @@ func main() {
 }
 
 // setup initializes the application.
-func setup() (*Config, *net.Conn, *proto.Client) {
-	cfg := parseArgs()
+func setup() (*net.Conn, *proto.Client) {
+	config = parseArgs()
 
 	// Open connection to server.
-	log.Printf("Connecting to %s...", cfg.Address)
-	conn, err := net.Dial(cfg.Address, cfg.SSLKey, cfg.SSLCert)
+	log.Printf("Connecting to %s...", config.Address)
+	conn, err := net.Dial(config.Address, config.SSLKey, config.SSLCert)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Dial: %v\n", err)
@@ -58,13 +67,13 @@ func setup() (*Config, *net.Conn, *proto.Client) {
 	})
 
 	Bind(client)
-	return cfg, conn, client
+	return conn, client
 }
 
 // shutdown cleans up our mess.
-func shutdown(cfg *Config, conn *net.Conn, client *proto.Client) {
+func shutdown(conn *net.Conn, client *proto.Client) {
 	log.Printf("Shutting down.")
-	client.Quit(cfg.QuitMessage)
+	client.Quit(config.QuitMessage)
 	client.Close()
 	conn.Close()
 }

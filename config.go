@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jteeuwen/blah/irc"
 	"github.com/jteeuwen/ini"
+	"strings"
 )
 
 // Config holds bot configuration data.
@@ -35,6 +36,39 @@ func (c *Config) Load(file string) (err error) {
 	c.Address = fmt.Sprintf("%s:%d", s.S("host", ""), s.U32("port", 0))
 	c.SSLKey = s.S("ssl-key", "")
 	c.SSLCert = s.S("ssl-cert", "")
+
+	chans := s.List("channels")
+	c.Channels = make([]*irc.Channel, len(chans))
+
+	// Parse channel definitions. A single channel comes as a string like:
+	//
+	//    <name>,<key>,<chanservpassword>
+	//
+	// The name is the only required value.
+	for i, line := range chans {
+		elements := strings.Split(line, ",")
+
+		for k := range elements {
+			elements[k] = strings.TrimSpace(elements[k])
+		}
+
+		if len(elements) == 0 || len(elements[0]) == 0 {
+			continue
+		}
+
+		var ch irc.Channel
+		ch.Name = elements[0]
+
+		if len(elements) > 1 {
+			ch.Key = elements[1]
+		}
+
+		if len(elements) > 2 {
+			ch.ChanservPassword = elements[2]
+		}
+
+		c.Channels[i] = &ch
+	}
 
 	s = ini.Section("account")
 	c.Nickname = s.S("nickname", "")

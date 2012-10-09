@@ -5,7 +5,7 @@ package irc
 
 // Channel represents a single channel.
 type Channel struct {
-	Name       string // Channel name.
-	Key        string // Channel key. Might be needed to join when channel is protected.
-	CSPassword string // Chanserv password.
+	Name             string // Channel name.
+	Key              string // Channel key. Might be needed to join when channel is protected.
+	ChanservPassword string // Chanserv password.
 }

@@ -147,9 +147,10 @@ func (c *Client) Join(channels []*irc.Channel) (err error) {
 			return
 		}
 
-		if len(ch.CSPassword) > 0 {
-			// FIXME(jimt): Ensure this is correct. Do we need to send the channel name?
-			err = c.Privmsg("chanserv", "IDENTIFY "+ch.CSPassword)
+		if len(ch.ChanservPassword) > 0 {
+			// FIXME(jimt): Ensure this is correct.
+			// Do we need to send the channel name?
+			err = c.Privmsg("chanserv", "IDENTIFY "+ch.ChanservPassword)
 			if err != nil {
 				return
 			}

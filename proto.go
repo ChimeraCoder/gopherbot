@@ -13,10 +13,12 @@ func Bind(c *proto.Client) {
 	c.Bind(proto.PIDUnknown, onAny)
 	c.Bind(proto.PIDPing, onPing)
 	c.Bind(proto.PIDVersion, onVersion)
+	c.Bind(proto.PIDMOTD, onJoinChannels)
+	c.Bind(proto.PIDNoMOTD, onJoinChannels)
 }
 
 // onAny is a catch-all handler for all incoming messages.
-// It is used to write incoming message to a log.
+// It is used to write incoming messages to a log.
 func onAny(c *proto.Client, m *proto.Message) {
 	log.Printf("> [%s] %s", m.Type, m.Data)
 }
@@ -30,4 +32,11 @@ func onPing(c *proto.Client, m *proto.Message) {
 func onVersion(c *proto.Client, m *proto.Message) {
 	c.Privmsg(m.Receiver, "%s %d.%d.%s",
 		AppName, AppVersionMajor, AppVersionMinor, AppVersionRev)
+}
+
+// onJoinChannels is used to complete the login procedure.
+// We have just received the server's MOTD and now is a good time to
+// start joining channels.
+func onJoinChannels(c *proto.Client, m *proto.Message) {
+	c.Join(config.Channels)
 }
