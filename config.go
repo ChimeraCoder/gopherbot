@@ -8,6 +8,8 @@ import (
 	"github.com/jteeuwen/blah/irc"
 	"github.com/jteeuwen/ini"
 	"strings"
+	"sync/atomic"
+	"unsafe"
 )
 
 // Config holds bot configuration data.
@@ -21,6 +23,24 @@ type Config struct {
 	NickservPassword string
 	QuitMessage      string
 	Channels         []*irc.Channel
+}
+
+// SetNickname atomically sets the new nickname.
+// This is used in response to proto.PIDNickInUse messages.
+func (c *Config) SetNickname(nickname string) {
+	new := unsafe.Pointer(&nickname)
+
+	// FIXME(jimt): Find out how this is supposed to work.
+	for i := 0; i < 5; i++ {
+		old := unsafe.Pointer(&c.Nickname)
+		val := (*unsafe.Pointer)(old)
+
+		if atomic.CompareAndSwapPointer(val, old, new) {
+			return
+		}
+	}
+
+	panic("Unable to change nickname")
 }
 
 // Load loads configuration data from the given ini file.
