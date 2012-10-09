@@ -13,8 +13,9 @@ func Bind(c *proto.Client) {
 	c.Bind(proto.PIDUnknown, onAny)
 	c.Bind(proto.PIDPing, onPing)
 	c.Bind(proto.PIDVersion, onVersion)
-	c.Bind(proto.PIDMOTD, onJoinChannels)
+	c.Bind(proto.PIDEndOfMOTD, onJoinChannels)
 	c.Bind(proto.PIDNoMOTD, onJoinChannels)
+	c.Bind(proto.PIDNickInUse, onNickInUse)
 }
 
 // onAny is a catch-all handler for all incoming messages.
@@ -39,4 +40,17 @@ func onVersion(c *proto.Client, m *proto.Message) {
 // start joining channels.
 func onJoinChannels(c *proto.Client, m *proto.Message) {
 	c.Join(config.Channels)
+}
+
+// onNickInUse is called whenever we receive a notification that our
+// nickname is already in use. We will attempt to re-acquire it by 
+// identifying with our password. Otherwise we will pick a new name.
+func onNickInUse(c *proto.Client, m *proto.Message) {
+	if len(config.NickservPassword) > 0 {
+		c.Recover(config.Nickname, config.NickservPassword)
+		return
+	}
+
+	config.Nickname += "_"
+	c.Nick(config.Nickname, "")
 }

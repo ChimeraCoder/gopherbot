@@ -130,6 +130,13 @@ func (c *Client) Nick(name, pass string) error {
 	return err
 }
 
+// Recover attempts to re-authenticate our username, so we can
+// regain the use of it. This is mostly useful after we received
+// a PIDNickInUse message.
+func (c *Client) Recover(nickname, password string) error {
+	return c.Raw("NS RECOVER %s %s", nickname, password)
+}
+
 // Join joins the given channels.
 func (c *Client) Join(channels []*irc.Channel) (err error) {
 	for _, ch := range channels {
