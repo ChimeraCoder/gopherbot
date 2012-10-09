@@ -54,8 +54,8 @@ func (c *Config) Load(file string) (err error) {
 
 	s := ini.Section("net")
 	c.Address = fmt.Sprintf("%s:%d", s.S("host", ""), s.U32("port", 0))
-	c.SSLKey = s.S("ssl-key", "")
-	c.SSLCert = s.S("ssl-cert", "")
+	c.SSLKey = s.S("x509-key", "")
+	c.SSLCert = s.S("x509-cert", "")
 
 	chans := s.List("channels")
 	c.Channels = make([]*irc.Channel, len(chans))

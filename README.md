@@ -6,6 +6,7 @@ ircb is an IRC bot.
 ### TODO
 
 * Verify that `proto.Client.Join` works correctly.
+  Specifically the part where we identify ourselves with chanserv.
 * Determine correct use of `atomic.CompareAndSwapPointer`.
   Notably in `main.Config.SetNickname`.
 * Implement command parser and handler.
