@@ -9,7 +9,6 @@ import (
 	"crypto/tls"
 	"io"
 	"net"
-	"time"
 )
 
 // Conn represents a single tcp connection.
@@ -18,17 +17,20 @@ type Conn struct {
 	reader *bufio.Reader
 }
 
-// Dial opens a conneciton to the given address.
+// Dial opens a connection to the given address.
 // Optionally it runs in secure mode (TLS). But only if both key and cert
-// contain valid paths to respective ssl-key and ssl-certificate files.
-func Dial(address, key, cert string) (c *Conn, err error) {
+// contain valid paths to respective x509 key and certificate files.
+func Dial(address, cert, key string) (c *Conn, err error) {
 	c = new(Conn)
 
 	if len(key) > 0 && len(cert) > 0 {
 		cfg := new(tls.Config)
-		cfg.Rand = nil
-		cfg.Time = time.Now
-		cfg.ServerName = address
+		cfg.Certificates = make([]tls.Certificate, 1)
+		cfg.Certificates[0], err = tls.LoadX509KeyPair(cert, key)
+
+		if err != nil {
+			return
+		}
 
 		c.Conn, err = tls.Dial("tcp", address, cfg)
 	} else {
@@ -57,11 +59,7 @@ func (c *Conn) Close() (err error) {
 // It ensures the data does not exceed 512 bytes as this is the limit
 // for IRC payloads. Any excess data is simply truncated.
 func (c *Conn) Write(p []byte) (n int, err error) {
-	if len(p) == 0 {
-		return 0, nil
-	}
-
-	if c.Conn == nil {
+	if len(p) == 0 || c.Conn == nil {
 		return 0, io.EOF
 	}
 
