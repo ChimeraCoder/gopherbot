@@ -4,7 +4,7 @@
 package main
 
 import (
-	"github.com/jteeuwen/blah/proto"
+	"github.com/jteeuwen/ircb/proto"
 	"log"
 )
 

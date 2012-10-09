@@ -5,7 +5,7 @@ This package holds an IRC client protocol implementation.
 
 ### Usage
 
-    go get github.com/jteeuwen/blah/proto
+    go get github.com/jteeuwen/ircb/proto
 
 
 ### License

@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	AppName         = "blah"
+	AppName         = "ircb"
 	AppVersionMajor = 0
 	AppVersionMinor = 1
 )

@@ -5,7 +5,7 @@ package proto
 
 import (
 	"fmt"
-	"github.com/jteeuwen/blah/irc"
+	"github.com/jteeuwen/ircb/irc"
 )
 
 // ReadHandler represents a client protocol event handler.

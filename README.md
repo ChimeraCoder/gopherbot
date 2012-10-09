@@ -1,6 +1,6 @@
-## blah
+## ircb
 
-Blah is an IRC bot.
+ircb is an IRC bot.
 
 
 ### TODO
@@ -23,7 +23,7 @@ Blah is an IRC bot.
 
 ### Usage
 
-    go get github.com/jteeuwen/blah
+    go get github.com/jteeuwen/ircb
 
 
 ### License

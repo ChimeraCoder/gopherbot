@@ -6,8 +6,8 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/jteeuwen/blah/net"
-	"github.com/jteeuwen/blah/proto"
+	"github.com/jteeuwen/ircb/net"
+	"github.com/jteeuwen/ircb/proto"
 	"log"
 	"os"
 	"path/filepath"

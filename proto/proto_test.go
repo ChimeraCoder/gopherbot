@@ -5,7 +5,7 @@ package proto
 
 import (
 	"bytes"
-	"github.com/jteeuwen/blah/irc"
+	"github.com/jteeuwen/ircb/irc"
 	"testing"
 )
 

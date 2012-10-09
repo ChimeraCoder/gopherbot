@@ -5,7 +5,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jteeuwen/blah/irc"
+	"github.com/jteeuwen/ircb/irc"
 	"github.com/jteeuwen/ini"
 	"strings"
 	"sync/atomic"

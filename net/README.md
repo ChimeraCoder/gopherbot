@@ -5,7 +5,7 @@ This package contains basic network code for a TCP client.
 
 ### Usage
 
-    go get github.com/jteeuwen/blah/net
+    go get github.com/jteeuwen/ircb/net
 
 
 ### License

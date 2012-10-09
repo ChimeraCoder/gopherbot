@@ -5,7 +5,7 @@ This package contains some basic IRC related types.
 
 ### Usage
 
-    go get github.com/jteeuwen/blah/irc
+    go get github.com/jteeuwen/ircb/irc
 
 
 ### License
