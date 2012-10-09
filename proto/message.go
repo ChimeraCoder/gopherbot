@@ -21,7 +21,6 @@ var (
 
 // Message is a parsed incoming message.
 type Message struct {
-	Server     string
 	SenderName string
 	SenderMask string
 	Receiver   string
@@ -83,13 +82,13 @@ func parseMessage(data string) (m *Message, err error) {
 
 	match = regSrv1.FindStringSubmatch(data)
 	if len(match) > 0 {
-		m.Server = match[1]
+		m.SenderMask = match[1]
 		m.Type = findType(match[2])
 		m.SenderName = match[3]
 		m.Receiver = match[4]
 
 		if m.SenderName == "*" {
-			m.SenderName = m.Server
+			m.SenderName = m.SenderMask
 		}
 
 		if len(match) > 5 && len(match[5]) > 0 {
@@ -100,9 +99,9 @@ func parseMessage(data string) (m *Message, err error) {
 
 	match = regSrv2.FindStringSubmatch(data)
 	if len(match) > 0 {
-		m.Server = match[1]
+		m.SenderMask = match[1]
 		m.Type = findType(match[2])
-		m.SenderName = m.Server
+		m.SenderName = m.SenderMask
 		m.Receiver = match[3]
 
 		if len(match) > 4 && len(match[4]) > 0 {
