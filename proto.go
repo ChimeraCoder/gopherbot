@@ -18,7 +18,7 @@ func Bind(c *proto.Client) {
 // onAny is a catch-all handler for all incoming messages.
 // It is used to write incoming message to a log.
 func onAny(c *proto.Client, m *proto.Message) {
-	log.Printf("[%s] %s", m.Type, m.Data)
+	log.Printf("> [%s] %s", m.Type, m.Data)
 }
 
 // onPing handles PING messages.
@@ -28,5 +28,6 @@ func onPing(c *proto.Client, m *proto.Message) {
 
 // onVersion handles VERSION requests.
 func onVersion(c *proto.Client, m *proto.Message) {
-
+	c.Privmsg(m.Receiver, "%s %d.%d.%s",
+		AppName, AppVersionMajor, AppVersionMinor, AppVersionRev)
 }

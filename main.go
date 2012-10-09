@@ -29,6 +29,7 @@ func main() {
 
 	// Create protocol handler.
 	client := proto.NewClient(func(p []byte) error {
+		log.Printf("< %s", p)
 		_, err := conn.Write(p)
 		return err
 	})

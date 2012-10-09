@@ -91,20 +91,23 @@ func (c *Client) Login(username string) error {
 }
 
 // Privmsg sends the specified message to the given target.
-func (c *Client) Privmsg(target, message string) error {
-	return c.Raw("PRIVMSG %s :%s", target, message)
+func (c *Client) Privmsg(target, f string, argv ...interface{}) error {
+	return c.Raw("PRIVMSG %s :%s", target, fmt.Sprintf(f, argv...))
 }
 
 // Notice sends the specifid notice to the given target.
-func (c *Client) Notice(target, message string) error {
-	return c.Raw("NOTICE %s :%s", target, message)
+func (c *Client) Notice(target, f string, argv ...interface{}) error {
+	return c.Raw("NOTICE %s :%s", target, fmt.Sprintf(f, argv...))
 }
 
 // Quit quits from the server, optionally with the given quit message.
-func (c *Client) Quit(message string) error {
-	if len(message) > 0 {
-		return c.Raw("QUIT %s", message)
+func (c *Client) Quit(f string, argv ...interface{}) error {
+	f = fmt.Sprintf(f, argv...)
+
+	if len(f) > 0 {
+		return c.Raw("QUIT %s", f)
 	}
+
 	return c.Raw("QUIT")
 }
 
