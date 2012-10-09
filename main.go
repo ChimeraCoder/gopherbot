@@ -43,16 +43,12 @@ func setup() (*net.Conn, *proto.Client) {
 	// parse commandline arguments and create configuration.
 	config = parseArgs()
 
-	log.Printf("Connecting to %s...", config.Address)
-
 	// Open connection to server.
 	conn, err := net.Dial(config.Address, config.SSLCert, config.SSLKey)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Dial: %v\n", err)
 		os.Exit(1)
 	}
-
-	log.Printf("Connection established.")
 
 	// Create client protocol.
 	client := proto.NewClient(func(p []byte) error {

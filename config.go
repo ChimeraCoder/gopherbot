@@ -5,8 +5,8 @@ package main
 
 import (
 	"fmt"
-	"github.com/jteeuwen/ircb/irc"
 	"github.com/jteeuwen/ini"
+	"github.com/jteeuwen/ircb/irc"
 	"strings"
 	"sync/atomic"
 	"unsafe"

@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"io"
+	"log"
 	"net"
 )
 
@@ -23,8 +24,11 @@ type Conn struct {
 func Dial(address, cert, key string) (c *Conn, err error) {
 	c = new(Conn)
 
+	log.Printf("Connecting to %s...", address)
+
 	if len(key) > 0 && len(cert) > 0 {
-		cfg := new(tls.Config)
+		var cfg tls.Config
+		//cfg.InsecureSkipVerify = true
 		cfg.Certificates = make([]tls.Certificate, 1)
 		cfg.Certificates[0], err = tls.LoadX509KeyPair(cert, key)
 
@@ -32,13 +36,27 @@ func Dial(address, cert, key string) (c *Conn, err error) {
 			return
 		}
 
-		c.Conn, err = tls.Dial("tcp", address, cfg)
-	} else {
-		c.Conn, err = net.Dial("tcp", address)
-	}
+		c.Conn, err = tls.Dial("tcp", address, &cfg)
+		if err != nil {
+			return
+		}
 
-	if err != nil {
-		return
+		log.Println("Secure connection established.")
+
+		state := c.Conn.(*tls.Conn).ConnectionState()
+		log.Println("TLS Handshake: ", state.HandshakeComplete)
+		log.Println("TLS Mutual: ", state.NegotiatedProtocolIsMutual)
+		log.Println("TLS Certificates:")
+
+		for _, v := range state.PeerCertificates {
+			log.Printf(" - %v", v.Subject)
+		}
+	} else {
+		if c.Conn, err = net.Dial("tcp", address); err != nil {
+			return
+		}
+
+		log.Println("Connection established.")
 	}
 
 	c.reader = bufio.NewReader(c.Conn)
