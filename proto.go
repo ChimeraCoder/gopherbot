@@ -51,6 +51,6 @@ func onNickInUse(c *proto.Client, m *proto.Message) {
 		return
 	}
 
-	config.Nickname += "_"
+	config.SetNickname(config.Nickname + "_")
 	c.Nick(config.Nickname, "")
 }
