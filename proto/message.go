@@ -52,6 +52,7 @@ func parseMessage(data string) (m *Message, err error) {
 		}
 
 		m.Data = strings.TrimSpace(match[5])
+
 		if m.Data == "\x01VERSION\x01" {
 			m.Type = PIDVersion
 		}
@@ -120,7 +121,8 @@ func findType(v string) ProtoId {
 		return ProtoId(n)
 	}
 
-	v = strings.ToLower(v)
+	v = strings.ToUpper(v)
+
 	switch v {
 	case "NOTICE":
 		return PIDNotice
