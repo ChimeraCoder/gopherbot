@@ -14,6 +14,29 @@ import (
 )
 
 func main() {
+	cfg, conn, client := setup()
+	defer shutdown(cfg, conn, client)
+
+	// Perform handshake.
+	log.Printf("Performing handshake...")
+	client.Login(cfg.Nickname)
+	client.Nick(cfg.Nickname, cfg.NickservPassword)
+
+	// Main data loop.
+	log.Printf("Entering data loop...")
+	for {
+		line, err := conn.ReadLine()
+
+		if err != nil {
+			break
+		}
+
+		client.Read(string(line))
+	}
+}
+
+// setup initializes the application.
+func setup() (*Config, *net.Conn, *proto.Client) {
 	cfg := parseArgs()
 
 	// Open connection to server.
@@ -35,25 +58,11 @@ func main() {
 	})
 
 	Bind(client)
+	return cfg, conn, client
+}
 
-	// Perform handshake.
-	log.Printf("Performing handshake...")
-	client.Login(cfg.Nickname)
-	client.Nick(cfg.Nickname, cfg.NickservPassword)
-
-	// Main data loop.
-	log.Printf("Entering data loop...")
-	for {
-		line, err := conn.ReadLine()
-
-		if err != nil {
-			break
-		}
-
-		client.Read(string(line))
-	}
-
-	// Clean up our mess.
+// shutdown cleans up our mess.
+func shutdown(cfg *Config, conn *net.Conn, client *proto.Client) {
 	log.Printf("Shutting down.")
 	client.Quit(cfg.QuitMessage)
 	client.Close()
