@@ -1,6 +1,9 @@
 ## net
 
 This package contains basic network code for a TCP client.
+It allows establishment of a connection over a regular TCP channel,
+or using a TLS encrypted version by supplying a valid X509 certificate
+and key file.
 
 
 ### Usage
