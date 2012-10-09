@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 )
 
+// Global bot configuration settings.
 var config *Config
 
 func main() {
@@ -46,12 +47,13 @@ func main() {
 
 // setup initializes the application.
 func setup() (*net.Conn, *proto.Client) {
+	// parse commandline arguments and create configuration.
 	config = parseArgs()
 
-	// Open connection to server.
 	log.Printf("Connecting to %s...", config.Address)
-	conn, err := net.Dial(config.Address, config.SSLKey, config.SSLCert)
 
+	// Open connection to server.
+	conn, err := net.Dial(config.Address, config.SSLCert, config.SSLKey)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Dial: %v\n", err)
 		os.Exit(1)
@@ -59,13 +61,14 @@ func setup() (*net.Conn, *proto.Client) {
 
 	log.Printf("Connection established.")
 
-	// Create protocol handler.
+	// Create client protocol.
 	client := proto.NewClient(func(p []byte) error {
 		log.Printf("< %s", p)
 		_, err := conn.Write(p)
 		return err
 	})
 
+	// Bind protocol handlers.
 	Bind(client)
 	return conn, client
 }
