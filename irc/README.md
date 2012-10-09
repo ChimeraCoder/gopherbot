@@ -1,16 +1,11 @@
-## blah
+## irc
 
-Blah is an IRC bot.
-
-
-### Dependencies
-
-    go get github.com/jteeuwen/ini
+This package contains some basic IRC related types.
 
 
 ### Usage
 
-    go get github.com/jteeuwen/blah
+    go get github.com/jteeuwen/blah/irc
 
 
 ### License

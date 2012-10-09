@@ -1,16 +1,11 @@
-## blah
+## net
 
-Blah is an IRC bot.
-
-
-### Dependencies
-
-    go get github.com/jteeuwen/ini
+This package contains basic network code for a TCP client.
 
 
 ### Usage
 
-    go get github.com/jteeuwen/blah
+    go get github.com/jteeuwen/blah/net
 
 
 ### License
