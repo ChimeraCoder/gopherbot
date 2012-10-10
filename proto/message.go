@@ -42,6 +42,10 @@ func parseMessage(data string) (m *Message, err error) {
 		return
 	}
 
+	if len(list) < 3 {
+		return
+	}
+
 	m.SenderMask = list[0][1:]
 	m.Command = findType(list[1])
 	m.Receiver = list[2]
