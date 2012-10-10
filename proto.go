@@ -6,6 +6,7 @@ package main
 import (
 	"github.com/jteeuwen/ircb/proto"
 	"log"
+	"strings"
 )
 
 // Bind binds protocol message handlers.
@@ -60,5 +61,7 @@ func onPrivMsg(c *proto.Client, m *proto.Message) {
 	case ctcpPing(c, m):
 		return
 
+	case len(config.CommandPrefix) > 0 && strings.HasPrefix(m.Data, config.CommandPrefix):
+		
 	}
 }
