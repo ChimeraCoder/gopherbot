@@ -91,9 +91,9 @@ func (c *Client) Login(username string) error {
 	return c.Raw("USER %s server %s :%s user", username, username, username)
 }
 
-// Privmsg sends the specified message to the given target.
-func (c *Client) Privmsg(target, f string, argv ...interface{}) error {
-	return c.Raw("PRIVMSG %s :%s", target, fmt.Sprintf(f, argv...))
+// PrivMsg sends the specified message to the given target.
+func (c *Client) PrivMsg(target, f string, argv ...interface{}) error {
+	return c.Raw("PrivMsg %s :%s", target, fmt.Sprintf(f, argv...))
 }
 
 // Notice sends the specifid notice to the given target.
@@ -126,7 +126,7 @@ func (c *Client) Nick(name, pass string) error {
 	}
 
 	if len(pass) > 0 {
-		err = c.Privmsg("nickserv", "IDENTIFY "+pass)
+		err = c.PrivMsg("nickserv", "IDENTIFY "+pass)
 	}
 	return err
 }
@@ -158,7 +158,7 @@ func (c *Client) Join(channels []*irc.Channel) (err error) {
 		if len(ch.ChanservPassword) > 0 {
 			// FIXME(jimt): Ensure this is correct.
 			// Do we need to send the channel name?
-			err = c.Privmsg("chanserv", "IDENTIFY "+ch.ChanservPassword)
+			err = c.PrivMsg("chanserv", "IDENTIFY "+ch.ChanservPassword)
 			if err != nil {
 				return
 			}

@@ -15,6 +15,7 @@ func Bind(c *proto.Client) {
 	c.Bind(proto.EndOfMOTD, onJoinChannels)
 	c.Bind(proto.ErrNoMOTD, onJoinChannels)
 	c.Bind(proto.ErrNicknameInUse, onNickInUse)
+	c.Bind(proto.CmdPrivMsg, onPrivMsg)
 }
 
 // onAny is a catch-all handler for all incoming messages.
@@ -46,4 +47,18 @@ func onNickInUse(c *proto.Client, m *proto.Message) {
 
 	config.SetNickname(config.Nickname + "_")
 	c.Nick(config.Nickname, "")
+}
+
+// onPrivMsg handles private messages directed at us.
+// We want to know if it concerns a CTCP request, a bot command
+// or just random talk.
+func onPrivMsg(c *proto.Client, m *proto.Message) {
+	switch {
+	case ctcpVersion(c, m):
+		return
+
+	case ctcpPing(c, m):
+		return
+
+	}
 }

@@ -29,7 +29,7 @@ func TestRaw(t *testing.T) {
 	}
 }
 
-func TestPrivmsg(t *testing.T) {
+func TestPrivMsg(t *testing.T) {
 	const want = "PRIVMSG bob :I like cake\n"
 	var have bytes.Buffer
 
@@ -40,7 +40,7 @@ func TestPrivmsg(t *testing.T) {
 		return err
 	})
 
-	if err := c.Privmsg(a, b); err != nil {
+	if err := c.PrivMsg(a, b); err != nil {
 		t.Fatal(err)
 	}
 
