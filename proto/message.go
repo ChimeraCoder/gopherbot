@@ -18,9 +18,9 @@ type Message struct {
 	Command    uint16
 }
 
-// InChannel returns true if this message came from a channel context
+// FromChannel returns true if this message came from a channel context
 // instead of a user or service.
-func (m *Message) InChannel() bool {
+func (m *Message) FromChannel() bool {
 	if len(m.Receiver) == 0 {
 		return false
 	}
@@ -72,7 +72,7 @@ func parseMessage(data string) (m *Message, err error) {
 		m.Data = m.Data[1:]
 	}
 
-	if !m.InChannel() {
+	if !m.FromChannel() {
 		m.Receiver = m.SenderName
 	}
 
