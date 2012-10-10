@@ -4,8 +4,8 @@
 package main
 
 import (
+	"github.com/jteeuwen/ircb/proto"
 	"log"
-	"strings"
 )
 
 // Bind binds protocol message handlers.
