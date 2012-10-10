@@ -93,7 +93,7 @@ func (c *Client) Login(username string) error {
 
 // PrivMsg sends the specified message to the given target.
 func (c *Client) PrivMsg(target, f string, argv ...interface{}) error {
-	return c.Raw("PrivMsg %s :%s", target, fmt.Sprintf(f, argv...))
+	return c.Raw("PRIVMSG %s :%s", target, fmt.Sprintf(f, argv...))
 }
 
 // Notice sends the specifid notice to the given target.
