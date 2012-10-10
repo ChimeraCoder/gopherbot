@@ -54,14 +54,15 @@ func onNickInUse(c *proto.Client, m *proto.Message) {
 // We want to know if it concerns a CTCP request, a bot command
 // or just random talk.
 func onPrivMsg(c *proto.Client, m *proto.Message) {
-	switch {
-	case ctcpVersion(c, m):
+	if ctcpVersion(c, m) {
 		return
+	}
 
-	case ctcpPing(c, m):
+	if ctcpPing(c, m) {
 		return
+	}
 
-	case len(config.CommandPrefix) > 0 && strings.HasPrefix(m.Data, config.CommandPrefix):
-
+	if len(config.CommandPrefix) > 0 && strings.HasPrefix(m.Data, config.CommandPrefix) {
+		return
 	}
 }
