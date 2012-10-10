@@ -62,7 +62,7 @@ func onPrivMsg(c *proto.Client, m *proto.Message) {
 		return
 	}
 
-	if len(config.CommandPrefix) > 0 && strings.HasPrefix(m.Data, config.CommandPrefix) {
+	if readCommand(c, m) {
 		return
 	}
 }
