@@ -10,18 +10,23 @@ import (
 
 // Bind binds protocol message handlers.
 func Bind(c *proto.Client) {
-	c.Bind(proto.PIDUnknown, onAny)
-	c.Bind(proto.PIDPing, onPing)
-	c.Bind(proto.PIDVersion, onVersion)
-	c.Bind(proto.PIDEndOfMOTD, onJoinChannels)
-	c.Bind(proto.PIDNoMOTD, onJoinChannels)
-	c.Bind(proto.PIDNickInUse, onNickInUse)
+	c.Bind(proto.Unknown, onAny)
+	c.Bind(proto.CPing, onPing)
+	c.Bind(proto.CCtcpVersion, onCtcpVersion)
+	c.Bind(proto.CCtcpPing, onCtcpPing)
+	c.Bind(proto.REndOfMOTD, onJoinChannels)
+	c.Bind(proto.ErrNoMOTD, onJoinChannels)
+	c.Bind(proto.ErrNicknameInUse, onNickInUse)
 }
 
 // onAny is a catch-all handler for all incoming messages.
 // It is used to write incoming messages to a log.
 func onAny(c *proto.Client, m *proto.Message) {
-	log.Printf("> [%s] %s", m.Type, m.Data)
+	if m.Command == proto.CPing {
+		return
+	}
+
+	log.Printf("> [%03d] [%s] %s", m.Command, m.Receiver, m.Data)
 }
 
 // onPing handles PING messages.
@@ -29,10 +34,15 @@ func onPing(c *proto.Client, m *proto.Message) {
 	c.Pong(m.Data)
 }
 
-// onVersion handles VERSION requests.
-func onVersion(c *proto.Client, m *proto.Message) {
+// onCtcpVersion handles VERSION requests.
+func onCtcpVersion(c *proto.Client, m *proto.Message) {
 	c.Privmsg(m.Receiver, "%s %d.%d.%s",
 		AppName, AppVersionMajor, AppVersionMinor, AppVersionRev)
+}
+
+// onCtcpPing handles CTCP ping requests.
+func onCtcpPing(c *proto.Client, m *proto.Message) {
+	c.Privmsg(m.Receiver, "%s", m.Data)
 }
 
 // onJoinChannels is used to complete the login procedure.

@@ -12,6 +12,9 @@ import (
 	"unsafe"
 )
 
+// Global bot configuration settings.
+var config *Config
+
 // Config holds bot configuration data.
 type Config struct {
 	Address          string
@@ -28,14 +31,13 @@ type Config struct {
 // SetNickname atomically sets the new nickname.
 // This is used in response to proto.PIDNickInUse messages.
 func (c *Config) SetNickname(nickname string) {
-	new := unsafe.Pointer(&nickname)
+	new := *c
+	new.Nickname = nickname
 
-	// FIXME(jimt): Find out how this is supposed to work.
-	for i := 0; i < 5; i++ {
-		old := unsafe.Pointer(&c.Nickname)
-		val := (*unsafe.Pointer)(old)
+	for {
+		old := (*unsafe.Pointer)(unsafe.Pointer(&config))
 
-		if atomic.CompareAndSwapPointer(val, old, new) {
+		if atomic.CompareAndSwapPointer(old, *old, unsafe.Pointer(&new)) {
 			return
 		}
 	}

@@ -4,6 +4,7 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"github.com/jteeuwen/ircb/net"
@@ -12,9 +13,6 @@ import (
 	"os"
 	"path/filepath"
 )
-
-// Global bot configuration settings.
-var config *Config
 
 func main() {
 	conn, client := setup()
@@ -52,7 +50,10 @@ func setup() (*net.Conn, *proto.Client) {
 
 	// Create client protocol.
 	client := proto.NewClient(func(p []byte) error {
-		log.Printf("< %s", p)
+		if !bytes.HasPrefix(p, []byte("PONG ")) {
+			log.Printf("< %s", p)
+		}
+
 		_, err := conn.Write(p)
 		return err
 	})

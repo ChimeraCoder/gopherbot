@@ -19,15 +19,15 @@ type WriteHandler func(data []byte) error
 
 // Client wraps an io.Writer and exposes IRC client protocol methods.
 type Client struct {
-	writer WriteHandler              // Write handler.
-	events map[ProtoId][]ReadHandler // Bound protocol event handlers.
+	writer WriteHandler             // Write handler.
+	events map[uint16][]ReadHandler // Bound protocol event handlers.
 }
 
 // NewClient creates a new client for the given writer.
 func NewClient(writer WriteHandler) *Client {
 	c := new(Client)
 	c.writer = writer
-	c.events = make(map[ProtoId][]ReadHandler)
+	c.events = make(map[uint16][]ReadHandler)
 	return c
 }
 
@@ -46,18 +46,18 @@ func (c *Client) Read(data string) (err error) {
 		return
 	}
 
-	m, ok := c.events[PIDUnknown]
+	m, ok := c.events[Unknown]
 	if ok {
 		for _, f := range m {
 			f(c, msg)
 		}
 	}
 
-	if msg.Type == PIDUnknown {
+	if msg.Command == Unknown {
 		return // Already called these handlers.
 	}
 
-	if m, ok = c.events[msg.Type]; !ok {
+	if m, ok = c.events[msg.Command]; !ok {
 		return
 	}
 
@@ -68,14 +68,15 @@ func (c *Client) Read(data string) (err error) {
 	return
 }
 
-// Bind binds the given read handler to the specified protocol type.
-// The handler is called whenever a message of the given type is received.
-// There can be multiple handlers for a single protocol message type.
+// Bind binds the given read handler to the specified command or reply
+// identifier. (Any of the builtin Rxxx and Cxxx constants). The handler is
+// called whenever a message of the given type is received.
+// There can be multiple handlers for the same identifier.
 //
-// Binding to PIDUnknown, will trigger the given handler on _every_
+// Binding to proto.Unknown, will trigger the given handler on _every_
 // incoming message. This can be useful if you just wish to agregate all
 // incoming data, regardless of its type. 
-func (c *Client) Bind(proto ProtoId, ch ReadHandler) {
+func (c *Client) Bind(proto uint16, ch ReadHandler) {
 	c.events[proto] = append(c.events[proto], ch)
 }
 

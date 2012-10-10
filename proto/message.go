@@ -5,18 +5,8 @@ package proto
 
 import (
 	"io"
-	"regexp"
 	"strconv"
 	"strings"
-)
-
-var (
-	regError  = regexp.MustCompile(`^ERROR :(.+)$`)
-	regPing   = regexp.MustCompile(`^PING :(.+)$`)
-	regNotice = regexp.MustCompile(`^NOTICE .+ :(.+)$`)
-	regSrv1   = regexp.MustCompile(`^:(.+) (\d+) (.+) (.+) :(.+)$`)
-	regSrv2   = regexp.MustCompile(`^:(.+) (\d+) (.+) :(.+)$`)
-	regMsg    = regexp.MustCompile(`^:(.+)!(.+) (.+) (.+) :(.*)$`)
 )
 
 // Message is a parsed incoming message.
@@ -25,7 +15,7 @@ type Message struct {
 	SenderMask string
 	Receiver   string
 	Data       string
-	Type       ProtoId
+	Command    uint16
 }
 
 // parseMessage parses a message from the given data.
@@ -35,77 +25,53 @@ func parseMessage(data string) (m *Message, err error) {
 	}
 
 	m = new(Message)
-	m.Type = PIDUnknown
+	m.Command = Unknown
 	m.Data = data
 
-	match := regMsg.FindStringSubmatch(data)
-	if len(match) > 0 {
-		m.SenderName = match[1]
-		m.SenderMask = match[2]
-		m.Type = findType(match[3])
-		m.Receiver = match[4]
+	list := strings.Split(data, " ")
 
-		if m.Receiver[0] != '#' && m.Receiver[0] != '&' &&
-			m.Receiver[0] != '!' && m.Receiver[0] != '+' {
-			m.Receiver = m.SenderName
-		}
+	switch list[0] {
+	case "PING":
+		m.Command = CPing
+		m.Data = list[1][1:]
+		return
 
-		m.Data = strings.TrimSpace(match[5])
-
-		if m.Data == "\x01VERSION\x01" {
-			m.Type = PIDVersion
-		}
-
+	case "ERROR":
+		m.Command = CError
+		m.Data = list[1][1:]
 		return
 	}
 
-	match = regError.FindStringSubmatch(data)
-	if len(match) > 0 {
-		m.Type = PIDError
-		m.Data = strings.TrimSpace(match[1])
-		return
+	m.SenderMask = list[0][1:]
+	idx := strings.Index(m.SenderMask, "!")
+
+	if idx > -1 {
+		m.SenderName = m.SenderMask[:idx]
+		m.SenderMask = m.SenderMask[idx+1:]
 	}
 
-	match = regPing.FindStringSubmatch(data)
-	if len(match) > 0 {
-		m.Type = PIDPing
-		m.Data = strings.TrimSpace(match[1])
-		return
+	m.Command = findType(list[1])
+	m.Receiver = list[2]
+	m.Data = strings.Join(list[3:], " ")
+
+	if len(m.Data) > 0 && m.Data[0] == ':' {
+		m.Data = m.Data[1:]
 	}
 
-	match = regNotice.FindStringSubmatch(data)
-	if len(match) > 0 {
-		m.Type = PIDNotice
-		m.Data = strings.TrimSpace(match[1])
-		return
+	if len(m.Receiver) > 0 && m.Receiver[0] != '#' && m.Receiver[0] != '&' &&
+		m.Receiver[0] != '!' && m.Receiver[0] != '+' {
+		m.Receiver = m.SenderName
 	}
 
-	match = regSrv1.FindStringSubmatch(data)
-	if len(match) > 0 {
-		m.SenderMask = match[1]
-		m.Type = findType(match[2])
-		m.SenderName = match[3]
-		m.Receiver = match[4]
+	if m.Command == CPrivMsg {
+		switch {
+		case m.Data == "\x01VERSION\x01":
+			m.Command = CCtcpVersion
 
-		if m.SenderName == "*" {
-			m.SenderName = m.SenderMask
-		}
-
-		if len(match) > 5 && len(match[5]) > 0 {
-			m.Data = strings.TrimSpace(match[5])
-		}
-		return
-	}
-
-	match = regSrv2.FindStringSubmatch(data)
-	if len(match) > 0 {
-		m.SenderMask = match[1]
-		m.Type = findType(match[2])
-		m.SenderName = m.SenderMask
-		m.Receiver = match[3]
-
-		if len(match) > 4 && len(match[4]) > 0 {
-			m.Data = strings.TrimSpace(match[4])
+		case strings.HasPrefix(m.Data, "\x01PING "):
+			// \x01PING 1349825341 894301\x01
+			m.Command = CCtcpPing
+			m.Data = m.Data[6:]
 		}
 	}
 
@@ -114,36 +80,112 @@ func parseMessage(data string) (m *Message, err error) {
 
 // findType attempts to parse a protocol ID from the input string.
 // These come as 3-digit numbers or a string. For example: "001" or "NOTICE"
-func findType(v string) ProtoId {
+func findType(v string) uint16 {
 	n, err := strconv.ParseUint(v, 10, 16)
 	if err == nil {
-		return ProtoId(n)
+		return uint16(n)
 	}
 
 	v = strings.ToUpper(v)
 
 	switch v {
-	case "NOTICE":
-		return PIDNotice
-	case "PRIVMSG":
-		return PIDPrivMsg
-	case "QUIT":
-		return PIDQuit
-	case "JOIN":
-		return PIDJoin
-	case "PART":
-		return PIDPart
-	case "KICK":
-		return PIDKick
-	case "NICK":
-		return PIDNick
-	case "PING":
-		return PIDPing
+	case "ADMIN":
+		return CAdmin
+	case "AWAY":
+		return CAway
+	case "CONNECT":
+		return CConnect
+	case "DIE":
+		return CDie
 	case "ERROR":
-		return PIDError
+		return CError
+	case "INFO":
+		return CInfo
+	case "INVITE":
+		return CInvite
+	case "ISON":
+		return CIsOn
+	case "JOIN":
+		return CJoin
+	case "KICK":
+		return CKick
+	case "KILL":
+		return CKill
+	case "LINKS":
+		return CLinks
+	case "LIST":
+		return CList
+	case "LUSERS":
+		return CLUsers
 	case "MODE":
-		return PIDMode
+		return CMode
+	case "MOTD":
+		return CMOTD
+	case "NAMES":
+		return CNames
+	case "NICK":
+		return CNick
+	case "NJOIN":
+		return CNJoin
+	case "NOTICE":
+		return CNotice
+	case "OPER":
+		return COper
+	case "PART":
+		return CPart
+	case "PASS":
+		return CPass
+	case "PING":
+		return CPing
+	case "PONG":
+		return CPong
+	case "PRIVMSG":
+		return CPrivMsg
+	case "QUIT":
+		return CQuit
+	case "REHASH":
+		return CRehash
+	case "RESTART":
+		return CRestart
+	case "SERVER":
+		return CServer
+	case "SERVICE":
+		return CService
+	case "SERVLIST":
+		return CServList
+	case "SQUERY":
+		return CSQuery
+	case "SQUIRT":
+		return CSquirt
+	case "SQUIT":
+		return CSQuit
+	case "STATS":
+		return CStats
+	case "SUMMON":
+		return CSummon
+	case "TIME":
+		return CTime
+	case "TOPIC":
+		return CTopic
+	case "TRACE":
+		return CTrace
+	case "USER":
+		return CUser
+	case "USERHOST":
+		return CUserHost
+	case "USERS":
+		return CUsers
+	case "VERSION":
+		return CVersion
+	case "WALLOPS":
+		return CWAllOps
+	case "WHO":
+		return CWho
+	case "WHOIS":
+		return CWhoIs
+	case "WHOWAS":
+		return CWhoWas
 	}
 
-	return PIDUnknown
+	return Unknown
 }
