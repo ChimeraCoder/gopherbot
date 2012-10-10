@@ -79,7 +79,7 @@ func parseMessage(data string) (m *Message, err error) {
 	return
 }
 
-// findType attempts to parse a protocol ID from the input string.
+// findType attempts to parse a command or reply type from the input string.
 // These come as 3-digit numbers or a string. For example: "001" or "NOTICE"
 func findType(v string) uint16 {
 	n, err := strconv.ParseUint(v, 10, 16)
