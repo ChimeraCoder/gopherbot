@@ -62,6 +62,6 @@ func onPrivMsg(c *proto.Client, m *proto.Message) {
 		return
 
 	case len(config.CommandPrefix) > 0 && strings.HasPrefix(m.Data, config.CommandPrefix):
-		
+
 	}
 }
