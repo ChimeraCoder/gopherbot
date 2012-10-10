@@ -8,6 +8,10 @@ if [ -z $1 ]; then
 	exit 1;
 fi
 
+echo "This script generates 1024 bit RSA key and certificate files.";
+echo "These files are strictly for testing purposes.";
+echo "Do NOT use them in production services.";
+
 mkdir -p certs;
 rm certs/*;
 
