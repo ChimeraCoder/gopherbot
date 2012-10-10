@@ -4,6 +4,7 @@
 package main
 
 import (
+	"github.com/jteeuwen/ircb/cmd"
 	"github.com/jteeuwen/ircb/proto"
 	"log"
 )
@@ -54,7 +55,7 @@ func onNickInUse(c *proto.Client, m *proto.Message) {
 // or just random talk.
 func onPrivMsg(c *proto.Client, m *proto.Message) {
 	switch {
-	case readCommand(c, m):
+	case cmd.Parse(config.CommandPrefix, c, m):
 	case ctcpVersion(c, m):
 	case ctcpPing(c, m):
 	}
