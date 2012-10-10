@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// ctcpVersion handles a CTCP version request.
 func ctcpVersion(c *proto.Client, m *proto.Message) bool {
 	if m.Data != "\x01VERSION\x01" {
 		return false
@@ -17,6 +18,7 @@ func ctcpVersion(c *proto.Client, m *proto.Message) bool {
 	return true
 }
 
+// ctcpPing handles a CTCP ping request.
 func ctcpPing(c *proto.Client, m *proto.Message) bool {
 	if !strings.HasPrefix(m.Data, "\x01PING ") {
 		return false
