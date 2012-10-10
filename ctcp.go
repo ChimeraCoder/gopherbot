@@ -14,7 +14,7 @@ func ctcpVersion(c *proto.Client, m *proto.Message) bool {
 		return false
 	}
 
-	c.PrivMsg(m.Receiver, "%s %d.%d", AppName, AppVersionMajor, AppVersionMinor)
+	c.PrivMsg(m.SenderName, "%s %d.%d", AppName, AppVersionMajor, AppVersionMinor)
 	return true
 }
 
@@ -24,6 +24,6 @@ func ctcpPing(c *proto.Client, m *proto.Message) bool {
 		return false
 	}
 
-	c.PrivMsg(m.Receiver, "\x01PONG %s\x01", m.Data[6:])
+	c.PrivMsg(m.SenderName, "\x01PONG %s\x01", m.Data[6:])
 	return true
 }

@@ -11,11 +11,11 @@ import (
 
 // Message is a parsed incoming message.
 type Message struct {
-	SenderName string
-	SenderMask string
-	Receiver   string
-	Data       string
-	Command    uint16
+	SenderName string // Nickname of sender.
+	SenderMask string // Hostmask of sender. 
+	Receiver   string // Target of message. Can be a user (our bot) or channel.
+	Data       string // Message payload.
+	Command    uint16 // Command identifier: type of message.
 }
 
 // FromChannel returns true if this message came from a channel context
@@ -70,13 +70,6 @@ func parseMessage(data string) (m *Message, err error) {
 
 	if len(m.Data) > 0 && m.Data[0] == ':' {
 		m.Data = m.Data[1:]
-	}
-
-	if !m.FromChannel() {
-		// Some messages supply our own nickname as the receiver.
-		// If we want to send messages back to the origin,
-		// we should reset the receiver to the sender's name.
-		m.Receiver = m.SenderName
 	}
 
 	return
