@@ -73,6 +73,9 @@ func parseMessage(data string) (m *Message, err error) {
 	}
 
 	if !m.FromChannel() {
+		// Some messages supply our own nickname as the receiver.
+		// If we want to send messages back to the origin,
+		// we should reset the receiver to the sender's name.
 		m.Receiver = m.SenderName
 	}
 
