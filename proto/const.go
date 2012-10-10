@@ -3,8 +3,6 @@
 
 package proto
 
-// http://www.networksorcery.com/enp/protocol/irc.htm
-
 // Unknown message type.
 const Unknown = 0
 

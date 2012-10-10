@@ -25,6 +25,7 @@ type Config struct {
 	OperPassword     string
 	NickservPassword string
 	QuitMessage      string
+	CommandPrefix    string
 	Channels         []*irc.Channel
 }
 
@@ -98,5 +99,8 @@ func (c *Config) Load(file string) (err error) {
 	c.OperPassword = s.S("oper-password", "")
 	c.NickservPassword = s.S("nickserv-password", "")
 	c.QuitMessage = s.S("quit-message", "")
+
+	s = ini.Section("bot")
+	c.CommandPrefix = s.S("command-prefix", "?")
 	return
 }
