@@ -18,6 +18,17 @@ type Message struct {
 	Command    uint16
 }
 
+// InChannel returns true if this message came from a channel context
+// instead of a user or service.
+func (m *Message) InChannel() bool {
+	if len(m.Receiver) == 0 {
+		return false
+	}
+
+	c := m.Receiver[0]
+	return c == '#' && c == '&' && c == '!' && c == '+'
+}
+
 // parseMessage parses a message from the given data.
 func parseMessage(data string) (m *Message, err error) {
 	if len(data) == 0 {
@@ -61,8 +72,7 @@ func parseMessage(data string) (m *Message, err error) {
 		m.Data = m.Data[1:]
 	}
 
-	if len(m.Receiver) > 0 && m.Receiver[0] != '#' && m.Receiver[0] != '&' &&
-		m.Receiver[0] != '!' && m.Receiver[0] != '+' {
+	if !m.InChannel() {
 		m.Receiver = m.SenderName
 	}
 
