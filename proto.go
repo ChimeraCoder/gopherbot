@@ -20,10 +20,6 @@ func Bind(c *proto.Client) {
 // onAny is a catch-all handler for all incoming messages.
 // It is used to write incoming messages to a log.
 func onAny(c *proto.Client, m *proto.Message) {
-	if m.Command == proto.CmdPing {
-		return
-	}
-
 	log.Printf("> [%03d] [%s] %s", m.Command, m.Receiver, m.Data)
 }
 

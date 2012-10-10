@@ -4,7 +4,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"github.com/jteeuwen/ircb/net"
@@ -54,10 +53,6 @@ func setup() (*net.Conn, *proto.Client) {
 
 	// Create client protocol.
 	client := proto.NewClient(func(p []byte) error {
-		if !bytes.HasPrefix(p, []byte("PONG ")) {
-			log.Printf("< %s", p)
-		}
-
 		_, err := conn.Write(p)
 		return err
 	})
