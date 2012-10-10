@@ -26,7 +26,7 @@ func (m *Message) InChannel() bool {
 	}
 
 	c := m.Receiver[0]
-	return c == '#' && c == '&' && c == '!' && c == '+'
+	return c == '#' || c == '&' || c == '!' || c == '+'
 }
 
 // parseMessage parses a message from the given data.
