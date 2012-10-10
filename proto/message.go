@@ -62,17 +62,6 @@ func parseMessage(data string) (m *Message, err error) {
 		m.Receiver = m.SenderName
 	}
 
-	if m.Command == CmdPrivMsg {
-		switch {
-		case m.Data == "\x01VERSION\x01":
-			m.Command = CmdCtcpVersion
-
-		case strings.HasPrefix(m.Data, "\x01PING "):
-			m.Command = CmdCtcpPing
-			m.Data = m.Data[6:]
-		}
-	}
-
 	return
 }
 

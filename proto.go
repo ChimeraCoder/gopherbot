@@ -12,8 +12,6 @@ import (
 func Bind(c *proto.Client) {
 	c.Bind(proto.Unknown, onAny)
 	c.Bind(proto.CmdPing, onPing)
-	c.Bind(proto.CmdCtcpVersion, onCtcpVersion)
-	c.Bind(proto.CmdCtcpPing, onCtcpPing)
 	c.Bind(proto.EndOfMOTD, onJoinChannels)
 	c.Bind(proto.ErrNoMOTD, onJoinChannels)
 	c.Bind(proto.ErrNicknameInUse, onNickInUse)
@@ -32,17 +30,6 @@ func onAny(c *proto.Client, m *proto.Message) {
 // onPing handles PING messages.
 func onPing(c *proto.Client, m *proto.Message) {
 	c.Pong(m.Data)
-}
-
-// onCtcpVersion handles VERSION requests.
-func onCtcpVersion(c *proto.Client, m *proto.Message) {
-	c.Privmsg(m.Receiver, "%s %d.%d.%s",
-		AppName, AppVersionMajor, AppVersionMinor, AppVersionRev)
-}
-
-// onCtcpPing handles CTCP ping requests.
-func onCtcpPing(c *proto.Client, m *proto.Message) {
-	c.Privmsg(m.Receiver, "%s", m.Data)
 }
 
 // onJoinChannels is used to complete the login procedure.

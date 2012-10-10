@@ -210,9 +210,3 @@ const (
 	CmdWhoIs    = 847 // Get information about a specific user.	FC 2812
 	CmdWhoWas   = 848 // Get information about a nickname which no longer exists.	FC 2812
 )
-
-// Custom command identifiers.
-const (
-	CmdCtcpPing    = 901 // Received a CTCP ping request.
-	CmdCtcpVersion = 902 // Received a CTCP version request.
-)
