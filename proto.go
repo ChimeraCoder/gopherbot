@@ -11,10 +11,10 @@ import (
 // Bind binds protocol message handlers.
 func Bind(c *proto.Client) {
 	c.Bind(proto.Unknown, onAny)
-	c.Bind(proto.CPing, onPing)
-	c.Bind(proto.CCtcpVersion, onCtcpVersion)
-	c.Bind(proto.CCtcpPing, onCtcpPing)
-	c.Bind(proto.REndOfMOTD, onJoinChannels)
+	c.Bind(proto.CmdPing, onPing)
+	c.Bind(proto.CmdCtcpVersion, onCtcpVersion)
+	c.Bind(proto.CmdCtcpPing, onCtcpPing)
+	c.Bind(proto.EndOfMOTD, onJoinChannels)
 	c.Bind(proto.ErrNoMOTD, onJoinChannels)
 	c.Bind(proto.ErrNicknameInUse, onNickInUse)
 }
@@ -22,7 +22,7 @@ func Bind(c *proto.Client) {
 // onAny is a catch-all handler for all incoming messages.
 // It is used to write incoming messages to a log.
 func onAny(c *proto.Client, m *proto.Message) {
-	if m.Command == proto.CPing {
+	if m.Command == proto.CmdPing {
 		return
 	}
 

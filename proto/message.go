@@ -32,27 +32,26 @@ func parseMessage(data string) (m *Message, err error) {
 
 	switch list[0] {
 	case "PING":
-		m.Command = CPing
+		m.Command = CmdPing
 		m.Data = list[1][1:]
 		return
 
 	case "ERROR":
-		m.Command = CError
+		m.Command = CmdError
 		m.Data = list[1][1:]
 		return
 	}
 
 	m.SenderMask = list[0][1:]
-	idx := strings.Index(m.SenderMask, "!")
+	m.Command = findType(list[1])
+	m.Receiver = list[2]
+	m.Data = strings.Join(list[3:], " ")
 
+	idx := strings.Index(m.SenderMask, "!")
 	if idx > -1 {
 		m.SenderName = m.SenderMask[:idx]
 		m.SenderMask = m.SenderMask[idx+1:]
 	}
-
-	m.Command = findType(list[1])
-	m.Receiver = list[2]
-	m.Data = strings.Join(list[3:], " ")
 
 	if len(m.Data) > 0 && m.Data[0] == ':' {
 		m.Data = m.Data[1:]
@@ -63,14 +62,13 @@ func parseMessage(data string) (m *Message, err error) {
 		m.Receiver = m.SenderName
 	}
 
-	if m.Command == CPrivMsg {
+	if m.Command == CmdPrivMsg {
 		switch {
 		case m.Data == "\x01VERSION\x01":
-			m.Command = CCtcpVersion
+			m.Command = CmdCtcpVersion
 
 		case strings.HasPrefix(m.Data, "\x01PING "):
-			// \x01PING 1349825341 894301\x01
-			m.Command = CCtcpPing
+			m.Command = CmdCtcpPing
 			m.Data = m.Data[6:]
 		}
 	}
@@ -90,101 +88,101 @@ func findType(v string) uint16 {
 
 	switch v {
 	case "ADMIN":
-		return CAdmin
+		return CmdAdmin
 	case "AWAY":
-		return CAway
+		return CmdAway
 	case "CONNECT":
-		return CConnect
+		return CmdConnect
 	case "DIE":
-		return CDie
+		return CmdDie
 	case "ERROR":
-		return CError
+		return CmdError
 	case "INFO":
-		return CInfo
+		return CmdInfo
 	case "INVITE":
-		return CInvite
+		return CmdInvite
 	case "ISON":
-		return CIsOn
+		return CmdIsOn
 	case "JOIN":
-		return CJoin
+		return CmdJoin
 	case "KICK":
-		return CKick
+		return CmdKick
 	case "KILL":
-		return CKill
+		return CmdKill
 	case "LINKS":
-		return CLinks
+		return CmdLinks
 	case "LIST":
-		return CList
+		return CmdList
 	case "LUSERS":
-		return CLUsers
+		return CmdLUsers
 	case "MODE":
-		return CMode
+		return CmdMode
 	case "MOTD":
-		return CMOTD
+		return CmdMOTD
 	case "NAMES":
-		return CNames
+		return CmdNames
 	case "NICK":
-		return CNick
+		return CmdNick
 	case "NJOIN":
-		return CNJoin
+		return CmdNJoin
 	case "NOTICE":
-		return CNotice
+		return CmdNotice
 	case "OPER":
-		return COper
+		return CmdOper
 	case "PART":
-		return CPart
+		return CmdPart
 	case "PASS":
-		return CPass
+		return CmdPass
 	case "PING":
-		return CPing
+		return CmdPing
 	case "PONG":
-		return CPong
+		return CmdPong
 	case "PRIVMSG":
-		return CPrivMsg
+		return CmdPrivMsg
 	case "QUIT":
-		return CQuit
+		return CmdQuit
 	case "REHASH":
-		return CRehash
+		return CmdRehash
 	case "RESTART":
-		return CRestart
+		return CmdRestart
 	case "SERVER":
-		return CServer
+		return CmdServer
 	case "SERVICE":
-		return CService
+		return CmdService
 	case "SERVLIST":
-		return CServList
+		return CmdServList
 	case "SQUERY":
-		return CSQuery
+		return CmdSQuery
 	case "SQUIRT":
-		return CSquirt
+		return CmdSquirt
 	case "SQUIT":
-		return CSQuit
+		return CmdSQuit
 	case "STATS":
-		return CStats
+		return CmdStats
 	case "SUMMON":
-		return CSummon
+		return CmdSummon
 	case "TIME":
-		return CTime
+		return CmdTime
 	case "TOPIC":
-		return CTopic
+		return CmdTopic
 	case "TRACE":
-		return CTrace
+		return CmdTrace
 	case "USER":
-		return CUser
+		return CmdUser
 	case "USERHOST":
-		return CUserHost
+		return CmdUserHost
 	case "USERS":
-		return CUsers
+		return CmdUsers
 	case "VERSION":
-		return CVersion
+		return CmdVersion
 	case "WALLOPS":
-		return CWAllOps
+		return CmdWAllOps
 	case "WHO":
-		return CWho
+		return CmdWho
 	case "WHOIS":
-		return CWhoIs
+		return CmdWhoIs
 	case "WHOWAS":
-		return CWhoWas
+		return CmdWhoWas
 	}
 
 	return Unknown
