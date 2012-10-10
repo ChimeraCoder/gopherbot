@@ -4,7 +4,6 @@
 package main
 
 import (
-	"github.com/jteeuwen/ircb/proto"
 	"log"
 	"strings"
 )
