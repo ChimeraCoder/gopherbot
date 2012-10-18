@@ -7,7 +7,6 @@ ircb is an IRC bot.
 
 * Verify that `proto.Client.Join` works correctly.
   Specifically the part where we identify ourselves with chanserv.
-* Implement command parser and handler.
 * Implement user tracking through sessions.
 
 
