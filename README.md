@@ -1,15 +1,17 @@
 ## ircb
 
-ircb is an IRC bot. In its current form, it does not do much, besides 
-connecting to a server, join the appropriate channels. In order to make it
-useful, commands have to be registered to allow users to interact with it.
+ircb is an IRC bot. In its current form, it does not do much besides 
+connecting to a server and joining the appropriate channels.
+In order to make it useful, commands have to be registered to allow
+users to interact with it.
 
 
 ### TODO
 
-* Verify that `proto.Client.Join` works correctly.
-  Specifically the part where we identify ourselves with chanserv.
 * Implement user tracking through sessions.
+* Implement user login.
+  * Deny command execution if `Command.Restricted == true` and current
+    user is not authorized.
 
 
 ### Dependencies
