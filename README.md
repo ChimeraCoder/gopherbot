@@ -5,6 +5,9 @@ connecting to a server and joining the appropriate channels.
 In order to make it useful, commands have to be registered to allow
 users to interact with it.
 
+A bot can be configured through an external .ini file. For an example
+of one, refer to the `config.example.ini` file in the root of this repo.
+
 
 ### TODO
 
