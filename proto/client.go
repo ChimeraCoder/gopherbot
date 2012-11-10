@@ -141,7 +141,7 @@ func (c *Client) Recover(nickname, password string) error {
 // Join joins the given channels.
 func (c *Client) Join(channels []*irc.Channel) (err error) {
 	for _, ch := range channels {
-		if err = c.Raw("CS INVITE %s", ch.Name); err != nil {
+		if err = c.Raw("chanserv INVITE %s", ch.Name); err != nil {
 			return
 		}
 
@@ -158,7 +158,7 @@ func (c *Client) Join(channels []*irc.Channel) (err error) {
 		if len(ch.ChanservPassword) > 0 {
 			// FIXME(jimt): Ensure this is correct.
 			// Do we need to send the channel name?
-			err = c.PrivMsg("chanserv", "IDENTIFY "+ch.ChanservPassword)
+			err = c.PrivMsg("chanserv", "IDENTIFY %s %s", ch.Name, ch.ChanservPassword)
 			if err != nil {
 				return
 			}

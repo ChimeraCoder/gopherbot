@@ -1,6 +1,8 @@
 ## ircb
 
-ircb is an IRC bot.
+ircb is an IRC bot. In its current form, it does not do much, besides 
+connecting to a server, join the appropriate channels. In order to make it
+useful, commands have to be registered to allow users to interact with it.
 
 
 ### TODO

@@ -41,8 +41,8 @@ func TestAdd(t *testing.T) {
 		c := new(Command)
 		c.Name = "add"
 		c.Params = []Param{
-			Param{Name: "a", Pattern: RegDecimal},
-			Param{Name: "b", Pattern: RegDecimal},
+			{Name: "a", Pattern: RegDecimal},
+			{Name: "b", Pattern: RegDecimal},
 		}
 		c.Execute = func(cmd *Command, c *proto.Client, m *proto.Message) {
 			c.PrivMsg(m.SenderName, "%d", cmd.Params[0].F64(0)+cmd.Params[1].F64(0))
