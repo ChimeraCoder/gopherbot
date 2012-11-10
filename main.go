@@ -73,7 +73,7 @@ func shutdown(conn *net.Conn, client *proto.Client) {
 // parseArgs reads and verfies commandline arguments.
 // It loads and returns a configuration object.
 func parseArgs() *Config {
-	config := flag.String("c", "", "Path to bot configuraiton file.")
+	config := flag.String("c", "", "Path to bot configuration file.")
 	version := flag.Bool("v", false, "Display version information.")
 
 	flag.Parse()
