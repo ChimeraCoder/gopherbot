@@ -51,7 +51,7 @@ Register a command with two parameters:
 			{Name: "b", Pattern: cmd.RegDecimal},
 		}
 		c.Execute = func(cmd *Command, c *proto.Client, m *proto.Message) {
-			c.PrivMsg(m.SenderName, "%d", cmd.Params[0].F64(0)+cmd.Params[1].F64(0))
+			c.PrivMsg(m.SenderName, "%f", cmd.Params[0].F64(0)+cmd.Params[1].F64(0))
 		}
 		return c
 	})
