@@ -85,10 +85,10 @@ func (c *Client) Raw(f string, argv ...interface{}) error {
 	return c.writer([]byte(fmt.Sprintf("%s\n", fmt.Sprintf(f, argv...))))
 }
 
-// Login performs the initial connection handshake.
+// User performs the initial connection handshake.
 // It should usually be followed directly with a call to Client.Nick().
-func (c *Client) Login(username string) error {
-	return c.Raw("USER %s server %s :%s user", username, username, username)
+func (c *Client) User(username string) error {
+	return c.Raw("USER %s 8 * :%s", username)
 }
 
 // PrivMsg sends the specified message to the given target.
@@ -156,8 +156,6 @@ func (c *Client) Join(channels []*irc.Channel) (err error) {
 		}
 
 		if len(ch.ChanservPassword) > 0 {
-			// FIXME(jimt): Ensure this is correct.
-			// Do we need to send the channel name?
 			err = c.PrivMsg("chanserv", "IDENTIFY %s %s", ch.Name, ch.ChanservPassword)
 			if err != nil {
 				return

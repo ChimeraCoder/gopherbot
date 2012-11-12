@@ -19,7 +19,7 @@ func main() {
 
 	// Perform handshake.
 	log.Printf("Performing handshake...")
-	client.Login(config.Nickname)
+	client.User(config.Nickname)
 	client.Nick(config.Nickname, config.NickservPassword)
 
 	// Main data loop.
