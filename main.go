@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/jteeuwen/ircb/net"
+	"github.com/jteeuwen/ircb/plugins/url"
 	"github.com/jteeuwen/ircb/proto"
 	"log"
 	"os"
@@ -16,6 +17,12 @@ import (
 func main() {
 	conn, client := setup()
 	defer shutdown(conn, client)
+
+	// Bind protocol handlers and commands.
+	bind(client)
+
+	// Initialize plugins.
+	url.Init(config.Profile, client)
 
 	// Perform handshake.
 	log.Printf("Performing handshake...")
@@ -57,8 +64,6 @@ func setup() (*net.Conn, *proto.Client) {
 		return err
 	})
 
-	// Bind protocol handlers.
-	Bind(client)
 	return conn, client
 }
 
@@ -73,7 +78,7 @@ func shutdown(conn *net.Conn, client *proto.Client) {
 // parseArgs reads and verfies commandline arguments.
 // It loads and returns a configuration object.
 func parseArgs() *Config {
-	config := flag.String("c", "", "Path to bot configuration file.")
+	profile := flag.String("p", "", "Path to bot profile directory.")
 	version := flag.Bool("v", false, "Display version information.")
 
 	flag.Parse()
@@ -83,15 +88,16 @@ func parseArgs() *Config {
 		os.Exit(0)
 	}
 
-	if len(*config) == 0 {
-		fmt.Fprintf(os.Stderr, "Missing configuraiton file.\n")
+	if len(*profile) == 0 {
+		fmt.Fprintf(os.Stderr, "Missing profile directory.\n")
 		flag.Usage()
 		os.Exit(1)
 	}
 
 	var c Config
-	err := c.Load(filepath.Clean(*config))
+	c.Profile = filepath.Clean(*profile)
 
+	err := c.Load(filepath.Join(c.Profile, "config.ini"))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Load config: %v\n", err)
 		os.Exit(1)

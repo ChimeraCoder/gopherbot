@@ -9,8 +9,8 @@ import (
 	"log"
 )
 
-// Bind binds protocol message handlers.
-func Bind(c *proto.Client) {
+// bind binds protocol message handlers.
+func bind(c *proto.Client) {
 	c.Bind(proto.Unknown, onAny)
 	c.Bind(proto.CmdPing, onPing)
 	c.Bind(proto.EndOfMOTD, onJoinChannels)

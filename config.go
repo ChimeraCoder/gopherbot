@@ -17,6 +17,7 @@ var config *Config
 
 // Config holds bot configuration data.
 type Config struct {
+	Profile          string
 	Address          string
 	SSLKey           string
 	SSLCert          string
