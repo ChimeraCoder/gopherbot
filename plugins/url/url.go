@@ -8,6 +8,7 @@ import (
 	"github.com/jteeuwen/ini"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
+	"html"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -107,5 +108,6 @@ func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 
 	body = bytes.TrimSpace(body[:e])
 
-	c.PrivMsg(m.Receiver, "%s's link shows: %s", m.SenderName, body)
+	c.PrivMsg(m.Receiver, "%s's link shows: %s",
+		m.SenderName, html.UnescapeString(string(body)))
 }
