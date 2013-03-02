@@ -5,4 +5,7 @@
 // It extracts the urls, fetches their contents from the web and finds the
 // page title element. The title is then posted to the channel/user from wence
 // the message came.
+//
+// This plugin has no commands. It simply hooks into PRIVMSG inputs
+// and scans them for URLs.
 package url
