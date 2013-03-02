@@ -24,7 +24,7 @@ func bind(c *proto.Client) {
 // It is used to write incoming messages to a log.
 func onAny(c *proto.Client, m *proto.Message) {
 	if len(m.SenderName) > 0 {
-		log.Printf("> [%03d] [%s] <%s> %s", m.Command, m.Receiver, m.SenderName, m.Data)
+		log.Printf("> [%03d] [%s:%s] %s", m.Command, m.Receiver, m.SenderName, m.Data)
 	} else {
 		log.Printf("> [%03d] [%s] %s", m.Command, m.Receiver, m.Data)
 	}
