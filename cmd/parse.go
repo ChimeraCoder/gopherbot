@@ -28,7 +28,6 @@ func Parse(prefix string, c *proto.Client, m *proto.Message) bool {
 	// Ensure the given command exists.
 	cmd := findCommand(name)
 	if cmd == nil {
-		c.PrivMsg(m.SenderName, "Unknown command %q", name)
 		return false
 	}
 

@@ -23,7 +23,11 @@ func bind(c *proto.Client) {
 // onAny is a catch-all handler for all incoming messages.
 // It is used to write incoming messages to a log.
 func onAny(c *proto.Client, m *proto.Message) {
-	log.Printf("> [%03d] [%s] <%s> %s", m.Command, m.Receiver, m.SenderName, m.Data)
+	if len(m.SenderName) > 0 {
+		log.Printf("> [%03d] [%s] <%s> %s", m.Command, m.Receiver, m.SenderName, m.Data)
+	} else {
+		log.Printf("> [%03d] [%s] %s", m.Command, m.Receiver, m.Data)
+	}
 }
 
 // onPing handles PING messages.
