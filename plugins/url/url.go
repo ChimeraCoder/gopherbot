@@ -106,5 +106,5 @@ func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 	body = bytes.TrimSpace(body[:e])
 
 	c.PrivMsg(m.Receiver, "%s's link shows: %s",
-		m.Receiver, html.UnescapeString(string(body)))
+		m.SenderName, html.UnescapeString(string(body)))
 }
