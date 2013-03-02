@@ -9,7 +9,6 @@ import (
 	"github.com/jteeuwen/ircb/proto"
 	"html"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 )
@@ -97,7 +96,6 @@ func (p *Plugin) excluded(url string) bool {
 func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 	resp, err := http.Get(url)
 	if err != nil {
-		log.Printf("[url] Failed to fetch %s", url)
 		return
 	}
 
@@ -105,7 +103,6 @@ func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 	resp.Body.Close()
 
 	if err != nil {
-		log.Printf("[url] Failed to read %s", url)
 		return
 	}
 
