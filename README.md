@@ -9,14 +9,6 @@ A bot can be configured through an external .ini file. For an example
 of one, refer to the `config.example.ini` file in the root of this repo.
 
 
-### TODO
-
-* Implement user tracking through sessions.
-* Implement user login.
-  * Deny command execution if `Command.Restricted == true` and current
-    user is not authorized.
-
-
 ### Dependencies
 
     go get github.com/jteeuwen/ini

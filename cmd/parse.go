@@ -26,18 +26,22 @@ func Parse(prefix string, c *proto.Client, m *proto.Message) bool {
 	}
 
 	// Ensure the given command exists.
-	new, ok := commands[name]
-	if !ok {
+	cmd := findCommand(name)
+	if cmd == nil {
 		c.PrivMsg(m.SenderName, "Unknown command %q", name)
 		return false
 	}
 
-	// Create a new command instance.
-	cmd := new()
+	// Ensure the current user us allowed to execute the command.
+	if cmd.Restricted && !isWhitelisted(m.SenderMask) {
+		c.PrivMsg(m.SenderName, "Access to %q denied.", name)
+		return false
+	}
+
+	// Make sure we received enough parameters.
 	pc := cmd.RequiredParamCount()
 	lp := len(params)
 
-	// Make sure we received enough parameters.
 	if pc > lp {
 		c.PrivMsg(m.SenderName, "Missing parameters for command %q", name)
 		return false

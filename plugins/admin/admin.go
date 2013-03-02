@@ -4,6 +4,7 @@
 package admin
 
 import (
+	"github.com/jteeuwen/ircb/cmd"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 )
@@ -25,6 +26,14 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 	if err != nil {
 		return
 	}
+
+	test := new(cmd.Command)
+	test.Name = "test"
+	test.Restricted = true
+	test.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
+		c.PrivMsg(m.SenderName, "%s %s", m.SenderName, m.SenderMask)
+	}
+	cmd.Register(test)
 
 	return
 }

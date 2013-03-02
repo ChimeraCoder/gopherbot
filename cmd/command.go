@@ -5,7 +5,47 @@ package cmd
 
 import (
 	"github.com/jteeuwen/ircb/proto"
+	"strings"
 )
+
+var (
+	// List of registered commands.
+	commands []*Command
+
+	// User whitelist
+	whitelist []string
+)
+
+// Register registers the given command name and constructor.
+// Modules should call this during initialization to register their
+// commands with the bot.
+func Register(c *Command) { commands = append(commands, c) }
+
+// SetWhitelist sets the list of user hostmasks. These users are allowed to
+// execute restricted commands.
+func SetWhitelist(list []string) { whitelist = list }
+
+// findCommand finds the first command instance for the given name.
+func findCommand(name string) *Command {
+	for _, c := range commands {
+		if strings.EqualFold(name, c.Name) {
+			return c
+		}
+	}
+
+	return nil
+}
+
+// isWhitelisted returns true if the given name is in the user whitelist.
+func isWhitelisted(name string) bool {
+	for _, mask := range whitelist {
+		if strings.EqualFold(name, mask) {
+			return true
+		}
+	}
+
+	return false
+}
 
 // CommandFunc represents a command constructor.
 type CommandFunc func() *Command
@@ -34,14 +74,4 @@ func (c *Command) RequiredParamCount() int {
 	}
 
 	return pc
-}
-
-// List of registered command constructors.
-var commands = make(map[string]CommandFunc)
-
-// Register registers the given command name and constructor.
-// Modules should call this during initialization to register their
-// commands with the bot.
-func Register(name string, cf CommandFunc) {
-	commands[name] = cf
 }

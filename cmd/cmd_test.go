@@ -12,14 +12,10 @@ import (
 const Prefix = "?"
 
 func TestHelp(t *testing.T) {
-	Register("help", func() *Command {
-		c := new(Command)
-		c.Name = "help"
-		c.Execute = func(cmd *Command, c *proto.Client, m *proto.Message) {
-
-		}
-		return c
-	})
+	c := new(Command)
+	c.Name = "help"
+	c.Execute = func(cmd *Command, c *proto.Client, m *proto.Message) {}
+	Register(c)
 
 	var buf bytes.Buffer
 	client := proto.NewClient(func(p []byte) error {
@@ -37,18 +33,16 @@ func TestHelp(t *testing.T) {
 }
 
 func TestAdd(t *testing.T) {
-	Register("add", func() *Command {
-		c := new(Command)
-		c.Name = "add"
-		c.Params = []Param{
-			{Name: "a", Pattern: RegDecimal},
-			{Name: "b", Pattern: RegDecimal},
-		}
-		c.Execute = func(cmd *Command, c *proto.Client, m *proto.Message) {
-			c.PrivMsg(m.SenderName, "%f", cmd.Params[0].F64(0)+cmd.Params[1].F64(0))
-		}
-		return c
-	})
+	c := new(Command)
+	c.Name = "add"
+	c.Params = []Param{
+		{Name: "a", Pattern: RegDecimal},
+		{Name: "b", Pattern: RegDecimal},
+	}
+	c.Execute = func(cmd *Command, c *proto.Client, m *proto.Message) {
+		c.PrivMsg(m.SenderName, "%f", cmd.Params[0].F64(0)+cmd.Params[1].F64(0))
+	}
+	Register(c)
 
 	var buf bytes.Buffer
 	client := proto.NewClient(func(p []byte) error {

@@ -6,6 +6,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/jteeuwen/ircb/cmd"
 	"github.com/jteeuwen/ircb/net"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
@@ -20,17 +21,6 @@ import (
 func main() {
 	conn, client := setup()
 	defer shutdown(conn, client)
-
-	// Bind protocol handlers and commands.
-	bind(client)
-
-	// Initialize plugins.
-	err := plugin.Load(config.Profile, client)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer plugin.Unload(client)
 
 	// Perform handshake.
 	log.Printf("Performing handshake...")
@@ -72,11 +62,25 @@ func setup() (*net.Conn, *proto.Client) {
 		return err
 	})
 
+	// Initialize plugins.
+	err = plugin.Load(config.Profile, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Inform command package of our user whitelist.
+	cmd.SetWhitelist(config.Whitelist)
+
+	// Bind protocol handlers and commands.
+	bind(client)
+
 	return conn, client
 }
 
 // shutdown cleans up our mess.
 func shutdown(conn *net.Conn, client *proto.Client) {
+	plugin.Unload(client)
+
 	log.Printf("Shutting down.")
 	client.Quit(config.QuitMessage)
 	client.Close()
