@@ -17,6 +17,8 @@ var config *Config
 
 // Config holds bot configuration data.
 type Config struct {
+	Channels         []*irc.Channel
+	Whitelist        []string
 	Profile          string
 	Address          string
 	SSLKey           string
@@ -27,7 +29,6 @@ type Config struct {
 	NickservPassword string
 	QuitMessage      string
 	CommandPrefix    string
-	Channels         []*irc.Channel
 }
 
 // SetNickname atomically sets the new nickname.
@@ -101,7 +102,7 @@ func (c *Config) Load(file string) (err error) {
 	c.NickservPassword = s.S("nickserv-password", "")
 	c.QuitMessage = s.S("quit-message", "")
 
-	s = ini.Section("bot")
-	c.CommandPrefix = s.S("command-prefix", "?")
+	c.CommandPrefix = ini.Section("bot").S("command-prefix", "?")
+	c.Whitelist = ini.Section("whitelist").List("user")
 	return
 }
