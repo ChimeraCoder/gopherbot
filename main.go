@@ -7,11 +7,14 @@ import (
 	"flag"
 	"fmt"
 	"github.com/jteeuwen/ircb/net"
-	"github.com/jteeuwen/ircb/plugins/url"
+	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 	"log"
 	"os"
 	"path/filepath"
+
+	_ "github.com/jteeuwen/ircb/plugins/admin"
+	_ "github.com/jteeuwen/ircb/plugins/url"
 )
 
 func main() {
@@ -22,7 +25,8 @@ func main() {
 	bind(client)
 
 	// Initialize plugins.
-	url.Init(config.Profile, client)
+	plugin.Load(config.Profile, client)
+	defer plugin.Unload(client)
 
 	// Perform handshake.
 	log.Printf("Performing handshake...")

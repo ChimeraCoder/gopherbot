@@ -14,58 +14,75 @@ import (
 	"regexp"
 )
 
-var (
+func init() { plugin.Register(New) }
+
+type Plugin struct {
+	*plugin.Base
+
 	// Each entry holds a regex pattern which should be excluded
 	// from the url-title-lookup.
 	exclude []*regexp.Regexp
 
 	// Pattern which recognizes urls.
-	url = regexp.MustCompile(`\bhttps?\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]+(\:[0-9]+)?(/\S*)?\b`)
-)
+	url *regexp.Regexp
+}
+
+func New(profile string) plugin.Plugin {
+	p := new(Plugin)
+	p.Base = plugin.New(profile, "url")
+	p.url = regexp.MustCompile(`\bhttps?\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]+(\:[0-9]+)?(/\S*)?\b`)
+	return p
+}
 
 // Init initializes the plugin. it loads configuration data and binds
 // commands and protocol handlers.
-func Init(profile string, c *proto.Client) {
-	var err error
+func (p *Plugin) Load(c *proto.Client) (err error) {
+	err = p.Base.Load(c)
+	if err != nil {
+		return
+	}
 
-	log.Println("Initializing: url")
+	c.Bind(proto.CmdPrivMsg, func(c *proto.Client, m *proto.Message) {
+		p.parseURL(c, m)
+	})
 
-	ini := plugin.LoadConfig(profile, "url")
+	ini := p.LoadConfig()
 	if ini != nil {
 		s := ini.Section("exclude")
 		list := s.List("url")
-		exclude = make([]*regexp.Regexp, len(list))
+		p.exclude = make([]*regexp.Regexp, len(list))
 
 		for i := range list {
-			exclude[i], err = regexp.Compile(list[i])
+			p.exclude[i], err = regexp.Compile(list[i])
+
 			if err != nil {
-				log.Fatalf("- Invalid pattern: %s", list[i])
+				return
 			}
 		}
 	}
 
-	c.Bind(proto.CmdPrivMsg, parseURL)
+	return
 }
 
 // parseURL looks for URL's embedded in incoming messages.
 // If they are valid http[s] url's and not in the exclude list,
 // we use them to fetch page titles from the internet.
-func parseURL(c *proto.Client, m *proto.Message) {
-	list := url.FindAllString(m.Data, -1)
+func (p *Plugin) parseURL(c *proto.Client, m *proto.Message) {
+	list := p.url.FindAllString(m.Data, -1)
 	if len(list) == 0 {
 		return
 	}
 
 	for _, url := range list {
-		if !excluded(url) {
+		if !p.excluded(url) {
 			go fetchTitle(c, m, url)
 		}
 	}
 }
 
 // excluded returns true if the given url is part of the exclusion list.
-func excluded(url string) bool {
-	for _, excl := range exclude {
+func (p *Plugin) excluded(url string) bool {
+	for _, excl := range p.exclude {
 		if excl.MatchString(url) {
 			return true
 		}
