@@ -25,7 +25,11 @@ func main() {
 	bind(client)
 
 	// Initialize plugins.
-	plugin.Load(config.Profile, client)
+	err := plugin.Load(config.Profile, client)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	defer plugin.Unload(client)
 
 	// Perform handshake.
