@@ -47,17 +47,19 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 	})
 
 	ini := p.LoadConfig()
-	if ini != nil {
-		s := ini.Section("exclude")
-		list := s.List("url")
-		p.exclude = make([]*regexp.Regexp, len(list))
+	if ini == nil {
+		return
+	}
 
-		for i := range list {
-			p.exclude[i], err = regexp.Compile(list[i])
+	s := ini.Section("exclude")
+	list := s.List("url")
+	p.exclude = make([]*regexp.Regexp, len(list))
 
-			if err != nil {
-				return
-			}
+	for i := range list {
+		p.exclude[i], err = regexp.Compile(list[i])
+
+		if err != nil {
+			return
 		}
 	}
 
