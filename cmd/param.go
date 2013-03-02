@@ -26,7 +26,14 @@ func (p *Param) Valid() bool {
 	return p.Pattern.MatchString(p.Value)
 }
 
-func (p *Param) Bool(defaultVal bool) bool {
+func (p *Param) S(defaultVal string) string {
+	if len(p.Value) > 0 {
+		return p.Value
+	}
+	return defaultVal
+}
+
+func (p *Param) B(defaultVal bool) bool {
 	v, err := strconv.ParseBool(p.Value)
 	if err != nil {
 		return defaultVal
