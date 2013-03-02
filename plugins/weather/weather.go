@@ -84,10 +84,10 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		wr := wd.Data.Request[0]
 		wc := wd.Data.Conditions[0]
 
-		c.PrivMsg(m.Receiver, "%s, weather in %s: %s°C/%s°F, cloud cover: %s%%, humidity: %s%%, wind: %s kph from %s, pressure: %s mb, visibility: %s km",
+		c.PrivMsg(m.Receiver, "%s, weather in %s: %s°C/%s°F, cloud cover: %s%%, humidity: %s%%, wind: %skph/%smph from %s, pressure: %s mb, visibility: %s km",
 			m.SenderName, wr.Query,
 			wc.TempC, wc.TempF, wc.CloudCover, wc.Humidity,
-			wc.WindSpeedKmph, wc.WindDir16Point,
+			wc.WindSpeedKmph, wc.WindSpeedMiles, wc.WindDir16Point,
 			wc.Pressure, wc.Visibility,
 		)
 	}
