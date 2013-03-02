@@ -27,13 +27,13 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		return
 	}
 
-	test := new(cmd.Command)
-	test.Name = "test"
-	test.Restricted = true
-	test.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
-		c.PrivMsg(m.SenderName, "%s %s", m.SenderName, m.SenderMask)
+	quit := new(cmd.Command)
+	quit.Name = "quit"
+	quit.Restricted = true
+	quit.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
+		c.Quit("")
 	}
-	cmd.Register(test)
+	cmd.Register(quit)
 
 	return
 }
