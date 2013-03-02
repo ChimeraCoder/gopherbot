@@ -5,7 +5,6 @@ package url
 
 import (
 	"bytes"
-	"github.com/jteeuwen/ini"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 	"html"
@@ -20,30 +19,28 @@ var (
 	// from the url-title-lookup.
 	exclude []*regexp.Regexp
 
-	// Patern which recognizes urls.
+	// Pattern which recognizes urls.
 	url = regexp.MustCompile(`\bhttps?\://[a-zA-Z0-9\-\.]+\.[a-zA-Z]+(\:[0-9]+)?(/\S*)?\b`)
 )
 
 // Init initializes the plugin. it loads configuration data and binds
 // commands and protocol handlers.
 func Init(profile string, c *proto.Client) {
+	var err error
+
 	log.Println("Initializing: url")
 
-	ini := ini.New()
-	err := ini.Load(plugin.ConfigPath(profile, "url"))
+	ini := plugin.LoadConfig(profile, "url")
+	if ini != nil {
+		s := ini.Section("exclude")
+		list := s.List("url")
+		exclude = make([]*regexp.Regexp, len(list))
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	s := ini.Section("exclude")
-	list := s.List("url")
-	exclude = make([]*regexp.Regexp, len(list))
-
-	for i := range list {
-		exclude[i], err = regexp.Compile(list[i])
-		if err != nil {
-			log.Fatalf("- Invalid pattern: %s", list[i])
+		for i := range list {
+			exclude[i], err = regexp.Compile(list[i])
+			if err != nil {
+				log.Fatalf("- Invalid pattern: %s", list[i])
+			}
 		}
 	}
 
@@ -109,5 +106,5 @@ func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 	body = bytes.TrimSpace(body[:e])
 
 	c.PrivMsg(m.Receiver, "%s's link shows: %s",
-		m.SenderName, html.UnescapeString(string(body)))
+		m.Receiver, html.UnescapeString(string(body)))
 }

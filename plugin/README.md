@@ -1,4 +1,4 @@
-## lpugin
+## plugin
 
 This package contains some plugin related utility functions.
 
