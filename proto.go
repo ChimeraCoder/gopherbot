@@ -39,7 +39,7 @@ func onPing(c *proto.Client, m *proto.Message) {
 // We have just received the server's MOTD and now is a good time to
 // start joining channels.
 func onJoinChannels(c *proto.Client, m *proto.Message) {
-	c.Join(config.Channels)
+	c.Join(config.Channels...)
 }
 
 // onNickInUse is called whenever we receive a notification that our

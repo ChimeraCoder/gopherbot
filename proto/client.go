@@ -139,7 +139,7 @@ func (c *Client) Recover(nickname, password string) error {
 }
 
 // Join joins the given channels.
-func (c *Client) Join(channels []*irc.Channel) (err error) {
+func (c *Client) Join(channels ...*irc.Channel) (err error) {
 	for _, ch := range channels {
 		if err = c.Raw("chanserv INVITE %s", ch.Name); err != nil {
 			return
@@ -167,7 +167,7 @@ func (c *Client) Join(channels []*irc.Channel) (err error) {
 }
 
 // Part leaves the given channels.
-func (c *Client) Part(channels []*irc.Channel) (err error) {
+func (c *Client) Part(channels ...*irc.Channel) (err error) {
 	for _, ch := range channels {
 		if err = c.Raw("PART %s", ch.Name); err != nil {
 			return
