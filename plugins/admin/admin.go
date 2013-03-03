@@ -5,6 +5,7 @@ package admin
 
 import (
 	"github.com/jteeuwen/ircb/cmd"
+	"github.com/jteeuwen/ircb/irc"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 )
@@ -27,13 +28,62 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		return
 	}
 
-	quit := new(cmd.Command)
-	quit.Name = "quit"
-	quit.Restricted = true
-	quit.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
+	comm := new(cmd.Command)
+	comm.Name = "quit"
+	comm.Description = "Unconditionally quit the bot program"
+	comm.Restricted = true
+	comm.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
 		c.Quit("")
 	}
-	cmd.Register(quit)
+	cmd.Register(comm)
+
+	comm = new(cmd.Command)
+	comm.Name = "join"
+	comm.Description = "Join the given channel"
+	comm.Restricted = true
+	comm.Params = []cmd.Param{
+		{Name: "channel", Optional: false, Pattern: cmd.RegChannel},
+		{Name: "key", Optional: true, Pattern: cmd.RegAny},
+		{Name: "chanservpass", Optional: true, Pattern: cmd.RegAny},
+	}
+	comm.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
+		var ch irc.Channel
+		ch.Name = cmd.Params[0].Value
+
+		if len(cmd.Params) > 1 {
+			ch.Key = cmd.Params[1].Value
+		}
+
+		if len(cmd.Params) > 2 {
+			ch.ChanservPassword = cmd.Params[2].Value
+		}
+
+		c.Join(&ch)
+	}
+	cmd.Register(comm)
+
+	comm = new(cmd.Command)
+	comm.Name = "leave"
+	comm.Description = "Leave the given channel"
+	comm.Restricted = true
+	comm.Params = []cmd.Param{
+		{Name: "channel", Optional: true, Pattern: cmd.RegChannel},
+	}
+	comm.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
+		var ch irc.Channel
+
+		if len(cmd.Params) > 0 {
+			ch.Name = cmd.Params[0].Value
+		} else {
+			if !m.FromChannel() {
+				return
+			}
+			ch.Name = m.Receiver
+		}
+
+		c.Part(&ch)
+	}
+	cmd.Register(comm)
 
 	return
 }
