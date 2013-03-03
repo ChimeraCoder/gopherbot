@@ -4,10 +4,8 @@
 package cmd
 
 import (
-	"bytes"
 	"github.com/jteeuwen/ircb/proto"
 	"strings"
-	"text/scanner"
 )
 
 // Parse reads incoming message data and tries to parse it into
@@ -47,7 +45,7 @@ func Parse(prefix string, c *proto.Client, m *proto.Message) bool {
 	}
 
 	// Copy over parameter values and ensure they are of the right format.
-	for i := 0; i < pc && i < lp; i++ {
+	for i := 0; i < lp && i < len(cmd.Params); i++ {
 		cmd.Params[i].Value = params[i]
 
 		if !cmd.Params[i].Valid() {
@@ -58,32 +56,58 @@ func Parse(prefix string, c *proto.Client, m *proto.Message) bool {
 	}
 
 	// Execute the command.
-	if cmd.Execute == nil {
-		c.PrivMsg(m.SenderName, "Command %q is not implemented", name)
-		return false
+	if cmd.Execute != nil {
+		go cmd.Execute(cmd, c, m)
 	}
 
-	go cmd.Execute(cmd, c, m)
 	return true
 }
 
 // parseCommand reads command name and arguments from the given input.
 func parseCommand(data string) (string, []string) {
-	var scan scanner.Scanner
 	var list []string
+	var quoted bool
 
-	scan.Mode = scanner.ScanIdents | scanner.ScanFloats | scanner.SkipComments |
-		scanner.ScanRawStrings | scanner.ScanChars
-	scan.Init(bytes.NewBufferString(data))
+loop:
+	for i := 0; i < len(data); i++ {
+		switch data[i] {
+		case '"':
+			quoted = !quoted
+			fallthrough
 
-	tok := scan.Scan()
-	for tok != scanner.EOF {
-		if scan.ErrorCount > 0 {
-			break
+		case ' ', '\t':
+			if quoted {
+				break
+			}
+
+			v := strings.TrimSpace(data[:i])
+			if len(v) == 0 {
+				break
+			}
+
+			if v[0] == '"' {
+				v = v[1:]
+
+				if len(v) == 0 {
+					break
+				}
+			}
+
+			list = append(list, v)
+			data = data[i+1:]
+			goto loop
+		}
+	}
+
+	v := strings.TrimSpace(data)
+	if len(v) > 0 {
+		if v[0] == '"' {
+			v = v[1:]
 		}
 
-		list = append(list, scan.TokenText())
-		tok = scan.Scan()
+		if len(v) > 0 {
+			list = append(list, v)
+		}
 	}
 
 	if len(list) == 0 {
