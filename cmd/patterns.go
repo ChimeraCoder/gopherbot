@@ -14,4 +14,5 @@ var (
 	RegDecimal = regexp.MustCompile(`^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$`)
 	RegOctal   = regexp.MustCompile(`^0[0-7]+$`)
 	RegBinary  = regexp.MustCompile(`^0b[01]+$`)
+	RegChannel = regexp.MustCompile(`^[#&!+].+$`)
 )
