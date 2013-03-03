@@ -169,10 +169,12 @@ func (c *Client) Join(channels ...*irc.Channel) (err error) {
 // Part leaves the given channels.
 func (c *Client) Part(channels ...*irc.Channel) (err error) {
 	for _, ch := range channels {
-		if err = c.Raw("PART %s", ch.Name); err != nil {
+		err = c.Raw("PART %s :", ch.Name)
+		if err != nil {
 			return
 		}
 	}
+
 	return
 }
 
