@@ -88,7 +88,7 @@ func (c *Client) Raw(f string, argv ...interface{}) error {
 // User performs the initial connection handshake.
 // It should usually be followed directly with a call to Client.Nick().
 func (c *Client) User(username string) error {
-	return c.Raw("USER %s 8 * :%s", username)
+	return c.Raw("USER %s 8 * :%s", username, username)
 }
 
 // PrivMsg sends the specified message to the given target.
