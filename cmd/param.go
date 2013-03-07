@@ -17,6 +17,17 @@ type Param struct {
 	Optional    bool           // Is this parameter optional?
 }
 
+// Copy returns a clone of the current parameter.
+func (p *Param) Copy() *Param {
+	np := new(Param)
+	np.Name = p.Name
+	np.Description = p.Description
+	np.Pattern = p.Pattern
+	np.Optional = p.Optional
+	np.Value = p.Value
+	return np
+}
+
 // Valid returns true if the parameter value matches the param pattern.
 func (p *Param) Valid() bool {
 	if p.Pattern == nil {

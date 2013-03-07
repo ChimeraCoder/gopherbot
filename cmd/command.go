@@ -29,7 +29,7 @@ func SetWhitelist(list []string) { whitelist = list }
 func findCommand(name string) *Command {
 	for _, c := range commands {
 		if strings.EqualFold(name, c.Name) {
-			return c
+			return c.Copy()
 		}
 	}
 
@@ -58,9 +58,26 @@ type ExecuteFunc func(*Command, *proto.Client, *proto.Message)
 type Command struct {
 	Name        string      // Command name.
 	Description string      // Command description.
+	Data        string      // Original parameter data as a single string.
 	Params      []Param     // Command parameters.
 	Execute     ExecuteFunc // Execution handler for the command.
 	Restricted  bool        // Command is restricted to admin users.
+}
+
+// Copy returns a deep copy of the current command.
+func (c *Command) Copy() *Command {
+	nc := new(Command)
+	nc.Name = c.Name
+	nc.Description = c.Description
+	nc.Execute = c.Execute
+	nc.Restricted = c.Restricted
+	nc.Params = make([]Param, len(c.Params))
+
+	for i := range c.Params {
+		nc.Params[i] = *c.Params[i].Copy()
+	}
+
+	return nc
 }
 
 // RequiredParamCount counts the number of required parameters.

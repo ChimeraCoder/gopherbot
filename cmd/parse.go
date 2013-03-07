@@ -29,6 +29,8 @@ func Parse(prefix string, c *proto.Client, m *proto.Message) bool {
 		return false
 	}
 
+	cmd.Data = strings.TrimSpace(m.Data[prefixlen+len(name):])
+
 	// Ensure the current user us allowed to execute the command.
 	if cmd.Restricted && !isWhitelisted(m.SenderMask) {
 		c.PrivMsg(m.SenderName, "Access to %q denied.", name)
