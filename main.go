@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 
 	_ "github.com/jteeuwen/ircb/plugins/admin"
+	_ "github.com/jteeuwen/ircb/plugins/dict"
 	_ "github.com/jteeuwen/ircb/plugins/url"
 	_ "github.com/jteeuwen/ircb/plugins/weather"
 )
