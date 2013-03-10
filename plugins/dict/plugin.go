@@ -40,12 +40,16 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		dict, err := Dial("tcp", "dict.org:2628")
 		if err != nil {
 			log.Printf("[dict] %s", err)
+			c.PrivMsg(m.Receiver, "%s, No definition found for '%s'",
+				m.SenderName, cmd.Params[0].Value)
 			return
 		}
 
 		def, err := dict.Define("wn", cmd.Params[0].Value)
 		if err != nil {
 			log.Printf("[dict] %s", err)
+			c.PrivMsg(m.Receiver, "%s, No definition found for '%s'",
+				m.SenderName, cmd.Params[0].Value)
 			return
 		}
 
