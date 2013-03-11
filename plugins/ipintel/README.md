@@ -35,8 +35,7 @@ margin. It should be a positive or negative integer.
 
 	<steve> ?loc 173.194.65.139
 	<bot> steve: 173.194.65.139 (Mapped), Network org.: google inc., Carrier: 
-	      google inc., Conn. type: ocx. Conn. speed: high, Routing: fixed, TLD: 
-	      net, SLD: 1e100. Location: north america/united 
+	      google inc., TLD: net, SLD: 1e100. Location: north america/united 
 	      states/california/mountain view (37.388020, -122.074310). Postalcode: 
 	      94041, Timezone: -8
 

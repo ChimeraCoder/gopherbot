@@ -90,6 +90,8 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 			return
 		}
 
+		fmt.Printf("%s\n", body)
+
 		var data Response
 		err = json.Unmarshal(body, &data)
 		if err != nil {
@@ -100,17 +102,13 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		inf := data.IPInfo
 
 		c.PrivMsg(m.Receiver,
-			"%s: %s (%s), Network org.: %s, Carrier: %s, "+
-				"Conn. type: %s. Conn. speed: %s, Routing: %s, TLD: %s, SLD: %s. "+
+			"%s: %s (%s), Network org.: %s, Carrier: %s, TLD: %s, SLD: %s. "+
 				"Location: %s/%s/%s/%s (%f, %f). Postalcode: %s, Timezone: %d",
 			m.SenderName,
 
 			inf.IPAddress, inf.IPType,
 			inf.Network.Organization,
 			inf.Network.Carrier,
-			inf.Network.ConnectionType,
-			inf.Network.LineSpeed,
-			inf.Network.RoutingType,
 			inf.Network.Domain.TLD,
 			inf.Network.Domain.SLD,
 
