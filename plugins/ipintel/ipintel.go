@@ -90,8 +90,6 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 			return
 		}
 
-		fmt.Printf("%s\n", body)
-
 		var data Response
 		err = json.Unmarshal(body, &data)
 		if err != nil {
