@@ -13,6 +13,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -142,30 +143,37 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 
 		ip[0], err = strconv.ParseUint(hex[:2], 16, 8)
 		if err != nil {
-			goto error
+			c.PrivMsg(m.Receiver, "%s: invalid mibbit address.", m.SenderName)
+			return
 		}
 
 		ip[1], err = strconv.ParseUint(hex[2:4], 16, 8)
 		if err != nil {
-			goto error
+			c.PrivMsg(m.Receiver, "%s: invalid mibbit address.", m.SenderName)
+			return
 		}
 
 		ip[2], err = strconv.ParseUint(hex[4:6], 16, 8)
 		if err != nil {
-			goto error
+			c.PrivMsg(m.Receiver, "%s: invalid mibbit address.", m.SenderName)
+			return
 		}
 
 		ip[3], err = strconv.ParseUint(hex[6:], 16, 8)
 		if err != nil {
-			goto error
+			c.PrivMsg(m.Receiver, "%s: invalid mibbit address.", m.SenderName)
+			return
 		}
 
-		c.PrivMsg(m.Receiver, "%s: %s -> %d.%d.%d.%d",
-			m.SenderName, hex, ip[0], ip[1], ip[2], ip[3])
-		return
+		address := fmt.Sprintf("%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3])
+		names, err := net.LookupAddr(address)
 
-	error:
-		c.PrivMsg(m.Receiver, "%s: invalid mibbit address.", m.SenderName)
+		if err != nil || len(names) == 0 {
+			c.PrivMsg(m.Receiver, "%s: %s is %s", m.SenderName, hex, address)
+		} else {
+			c.PrivMsg(m.Receiver, "%s: %s is %s / %s",
+				m.SenderName, hex, address, names[0])
+		}
 	}
 
 	cmd.Register(w)
