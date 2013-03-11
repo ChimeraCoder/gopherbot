@@ -31,3 +31,13 @@ margin. It should be a positive or negative integer.
   IP Intelligence supports only IPv4 (32-bit) addresses, and they must be in
   standard IPv4 dot-decimal notation. E.g.: `127.0.0.1`, `255.255.255.1`.
 
+### Example
+
+	<steve> ?loc 173.194.65.139
+	<bot> steve: 173.194.65.139 (Mapped), Network org.: google inc., Carrier: 
+	      google inc., Conn. type: ocx. Conn. speed: high, Routing: fixed, TLD: 
+	      net, SLD: 1e100. Location: north america/united 
+	      states/california/mountain view (37.388020, -122.074310). Postalcode: 
+	      94041, Timezone: -8
+
+
