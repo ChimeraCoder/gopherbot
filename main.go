@@ -16,6 +16,7 @@ import (
 
 	_ "github.com/jteeuwen/ircb/plugins/admin"
 	_ "github.com/jteeuwen/ircb/plugins/dict"
+	_ "github.com/jteeuwen/ircb/plugins/ipintel"
 	_ "github.com/jteeuwen/ircb/plugins/url"
 	_ "github.com/jteeuwen/ircb/plugins/weather"
 )

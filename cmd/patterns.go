@@ -15,4 +15,5 @@ var (
 	RegOctal   = regexp.MustCompile(`^0[0-7]+$`)
 	RegBinary  = regexp.MustCompile(`^0b[01]+$`)
 	RegChannel = regexp.MustCompile(`^[#&!+].+$`)
+	RegIPv4    = regexp.MustCompile(`^[1-2]?[0-9]?[0-9]\.[1-2]?[0-9]?[0-9]\.[1-2]?[0-9]?[0-9]\.[1-2]?[0-9]?[0-9]$`)
 )
