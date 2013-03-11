@@ -30,13 +30,23 @@ margin. It should be a positive or negative integer.
 * `loc <ipaddress>`: Fetches location data for the given IP address.
   IP Intelligence supports only IPv4 (32-bit) addresses, and they must be in
   standard IPv4 dot-decimal notation. E.g.: `127.0.0.1`, `255.255.255.1`.
+* `mibbit <hexstring>`: Decodes the 8-digit hex string that prefixes mibbit
+  addresses, into its original IPv4 address. For instance, a user joins through
+  the mibbit IRC service and has the mask `626ff0ce@xxxx.mibbit.com`. The
+  `626ff0ce` component encodes the user's own IP address.
+  
 
-### Example
+
+### Examples
 
 	<steve> ?loc 173.194.65.139
 	<bot> steve: 173.194.65.139 (Mapped), Network org.: google inc., Carrier: 
 	      google inc., TLD: net, SLD: 1e100. Location: north america/united 
 	      states/california/mountain view (37.388020, -122.074310). Postalcode: 
 	      94041, Timezone: -8
+
+    * joe [626ff0ce@xxxx.mibbit.com] has joined #test
+	<steve> ?mibbit 626ff0ce
+	<bot> steve: 626ff0ce -> 98.111.240.206
 
 

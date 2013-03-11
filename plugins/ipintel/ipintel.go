@@ -14,8 +14,12 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
+	"strconv"
 	"time"
 )
+
+var regMibbit = regexp.MustCompile(`^[a-fA-F0-9]{8}$`)
 
 const url = "http://api.neustar.biz/ipi/std/v1/ipinfo/%s?apikey=%s&sig=%s&format=json"
 
@@ -119,6 +123,49 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 			inf.Location.CityData.PostalCode,
 			inf.Location.CityData.TimeZone,
 		)
+	}
+
+	cmd.Register(w)
+
+	w = new(cmd.Command)
+	w.Name = "mibbit"
+	w.Description = "Resolve a mibbit address to a real IP address."
+	w.Restricted = false
+	w.Params = []cmd.Param{
+		{Name: "hex", Description: "Mibbit hex string", Pattern: regMibbit},
+	}
+	w.Execute = func(cmd *cmd.Command, c *proto.Client, m *proto.Message) {
+		hex := cmd.Params[0].Value
+
+		var ip [4]uint64
+		var err error
+
+		ip[0], err = strconv.ParseUint(hex[:2], 16, 8)
+		if err != nil {
+			goto error
+		}
+
+		ip[1], err = strconv.ParseUint(hex[2:4], 16, 8)
+		if err != nil {
+			goto error
+		}
+
+		ip[2], err = strconv.ParseUint(hex[4:6], 16, 8)
+		if err != nil {
+			goto error
+		}
+
+		ip[3], err = strconv.ParseUint(hex[6:], 16, 8)
+		if err != nil {
+			goto error
+		}
+
+		c.PrivMsg(m.Receiver, "%s: %s -> %d.%d.%d.%d",
+			m.SenderName, hex, ip[0], ip[1], ip[2], ip[3])
+		return
+
+	error:
+		c.PrivMsg(m.Receiver, "%s: invalid mibbit address.", m.SenderName)
 	}
 
 	cmd.Register(w)
