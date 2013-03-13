@@ -34,7 +34,6 @@ margin. It should be a positive or negative integer.
   addresses, into its original IPv4 address. For instance, a user joins through
   the mibbit IRC service and has the mask `626ff0ce@xxxx.mibbit.com`. The
   `626ff0ce` component encodes the user's own IP address.
-  
 
 
 ### Examples
