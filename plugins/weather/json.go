@@ -3,6 +3,10 @@
 
 package weather
 
+import (
+	"strconv"
+)
+
 type WeatherData struct {
 	Data struct {
 		Conditions []struct {
@@ -31,4 +35,19 @@ type WeatherData struct {
 			Type  string
 		} `json:"request"`
 	} `json:"data"`
+}
+
+// TempK returns the temerature in degrees Kelvin.
+func (w *WeatherData) TempK() float32 {
+	if len(w.Data.Conditions) == 0 {
+		return 0
+	}
+
+	wc := w.Data.Conditions[0]
+	n, err := strconv.ParseInt(wc.TempC, 10, 16)
+	if err != nil {
+		return 0
+	}
+
+	return float32(n) + 273.15
 }
