@@ -15,7 +15,7 @@ import (
 	"net/url"
 )
 
-const _url = `http://free.worldweatheronline.com/feed/weather.ashx?format=json&num_of_days=2&q=%s&key=%s`
+const _url = `http://api.worldweatheronline.com/free/v1/weather.ashx?format=json&num_of_days=2&q=%s&key=%s`
 
 func init() { plugin.Register(New) }
 
