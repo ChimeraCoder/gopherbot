@@ -103,10 +103,12 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		}
 
 		inf := data.IPInfo
+		mapsURL := fmt.Sprintf("https://maps.google.com/maps?q=%s,%s",
+			inf.Location.Latitude, inf.Location.Longitude)
 
 		c.PrivMsg(m.Receiver,
 			"%s: %s (%s), Network org.: %s, Carrier: %s, TLD: %s, SLD: %s. "+
-				"Location: %s/%s/%s/%s (%f, %f). Postalcode: %s, Timezone: %d",
+				"Location: %s/%s/%s/%s (%f, %f). Postalcode: %s, Timezone: %d, %s",
 			m.SenderName,
 
 			inf.IPAddress, inf.IPType,
@@ -123,6 +125,8 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 			inf.Location.Longitude,
 			inf.Location.CityData.PostalCode,
 			inf.Location.CityData.TimeZone,
+
+			mapsURL,
 		)
 	}
 
