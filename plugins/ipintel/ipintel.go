@@ -103,7 +103,7 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 		}
 
 		inf := data.IPInfo
-		mapsURL := fmt.Sprintf("https://maps.google.com/maps?q=%s,%s",
+		mapsURL := fmt.Sprintf("https://maps.google.com/maps?q=%f,%f",
 			inf.Location.Latitude, inf.Location.Longitude)
 
 		c.PrivMsg(m.Receiver,
