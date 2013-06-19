@@ -1,1 +1,1 @@
-app: ./gopherbot -p .
+app: gopherbot -p .
