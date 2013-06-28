@@ -5,17 +5,17 @@ package url
 
 import (
 	"bytes"
+	"github.com/ChimeraCoder/anaconda"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 	"html"
-    "os"
-    "strconv"
 	"io/ioutil"
+	"log"
 	"net/http"
+	"os"
 	"regexp"
-    "github.com/ChimeraCoder/anaconda"
+	"strconv"
 )
-
 
 //This regex will check if a URL points to a Twitter status
 var twitterUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?twitter.com\/[A-Za-z0-9]*\/status\/([0-9]+)`)
@@ -84,11 +84,11 @@ func (p *Plugin) parseURL(c *proto.Client, m *proto.Message) {
 	}
 
 	for _, url := range list {
-        //TODO make this less hackny
-        if twitterUrlRegex.MatchString(url) {
-            go fetchTweet(c, m, url)
+		//TODO make this less hackny
+		if twitterUrlRegex.MatchString(url) {
+			go fetchTweet(c, m, url)
 
-        } else if !p.excluded(url) {
+		} else if !p.excluded(url) {
 			go fetchTitle(c, m, url)
 		}
 	}
@@ -140,22 +140,25 @@ func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 
 // fetchTweet attempts to retrieve the tweet associated with a given url.
 func fetchTweet(c *proto.Client, m *proto.Message, url string) {
-    id, _ := strconv.ParseInt(twitterUrlRegex.FindStringSubmatch(url)[2], 10, 64)
-    tweet, err := api.GetTweet(id, nil)
-    if err != nil{
-        c.PrivMsg(m.Receiver, "error parsing tweet :(")
-    }
-
-
+	id, err := strconv.ParseInt(twitterUrlRegex.FindStringSubmatch(url)[2], 10, 64)
+	if err != nil {
+		c.PrivMsg(m.Receiver, "error parsing tweet :(")
+		log.Print("error parsing tweet for %s: %v", url, err)
+		fetchTitle(c, m, url)
+		return
+	}
+	tweet, err := api.GetTweet(id, nil)
+	if err != nil {
+		log.Print("error parsing tweet for %s: %v", url, err)
+		fetchTitle(c, m, url)
+		return
+	}
 	c.PrivMsg(m.Receiver, "%s's tweet shows: %s",
 		m.SenderName, html.UnescapeString(tweet.Text))
 }
 
-
-func init(){
-    anaconda.SetConsumerKey(os.Getenv("TWITTER_CONSUMER_KEY"))
-    anaconda.SetConsumerSecret(os.Getenv("TWITTER_CONSUMER_SECRET"))
-    api = anaconda.NewTwitterApi(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
+func init() {
+	anaconda.SetConsumerKey(os.Getenv("TWITTER_CONSUMER_KEY"))
+	anaconda.SetConsumerSecret(os.Getenv("TWITTER_CONSUMER_SECRET"))
+	api = anaconda.NewTwitterApi(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
 }
-
-
