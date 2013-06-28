@@ -39,5 +39,5 @@ export TWITTER_ACCESS_TOKEN=""
 export TWITTER_ACCESS_TOKEN_SECRET=""
 ````
 
-If the values are missing or invalid, or if fetching the tweet text fails for any reason, the plugin fails gracefully by falling back on fetching the <title> attribute
+If the values are missing or invalid, or if fetching the tweet text fails for any reason, the plugin fails gracefully by falling back on fetching the `<title>` attribute
 
