@@ -8,10 +8,19 @@ import (
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 	"html"
+    "os"
+    "strconv"
 	"io/ioutil"
 	"net/http"
 	"regexp"
+    "github.com/ChimeraCoder/anaconda"
 )
+
+
+//This regex will check if a URL points to a Twitter status
+var twitterUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?twitter.com\/[A-Za-z0-9]*\/status\/([0-9]+)`)
+
+var api anaconda.TwitterApi
 
 func init() { plugin.Register(New) }
 
@@ -75,7 +84,11 @@ func (p *Plugin) parseURL(c *proto.Client, m *proto.Message) {
 	}
 
 	for _, url := range list {
-		if !p.excluded(url) {
+        //TODO make this less hackny
+        if twitterUrlRegex.MatchString(url) {
+            go fetchTweet(c, m, url)
+
+        } else if !p.excluded(url) {
 			go fetchTitle(c, m, url)
 		}
 	}
@@ -124,3 +137,25 @@ func fetchTitle(c *proto.Client, m *proto.Message, url string) {
 	c.PrivMsg(m.Receiver, "%s's link shows: %s",
 		m.SenderName, html.UnescapeString(string(body)))
 }
+
+// fetchTweet attempts to retrieve the tweet associated with a given url.
+func fetchTweet(c *proto.Client, m *proto.Message, url string) {
+    id, _ := strconv.ParseInt(twitterUrlRegex.FindStringSubmatch(url)[2], 10, 64)
+    tweet, err := api.GetTweet(id, nil)
+    if err != nil{
+        c.PrivMsg(m.Receiver, "error parsing tweet :(")
+    }
+
+
+	c.PrivMsg(m.Receiver, "%s's tweet shows: %s",
+		m.SenderName, html.UnescapeString(tweet.Text))
+}
+
+
+func init(){
+    anaconda.SetConsumerKey(os.Getenv("TWITTER_CONSUMER_KEY"))
+    anaconda.SetConsumerSecret(os.Getenv("TWITTER_CONSUMER_SECRET"))
+    api = anaconda.NewTwitterApi(os.Getenv("TWITTER_ACCESS_TOKEN"), os.Getenv("TWITTER_ACCESS_TOKEN_SECRET"))
+}
+
+
