@@ -2,4 +2,5 @@ testdata/certs
 *.log
 ircb
 gopherbot
+conf.sh
 
