@@ -75,7 +75,7 @@ func (c *Client) Read(data string) (err error) {
 //
 // Binding to proto.Unknown, will trigger the given handler on _every_
 // incoming message. This can be useful if you just wish to agregate all
-// incoming data, regardless of its type. 
+// incoming data, regardless of its type.
 func (c *Client) Bind(proto uint16, ch ReadHandler) {
 	c.events[proto] = append(c.events[proto], ch)
 }

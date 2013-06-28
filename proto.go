@@ -43,7 +43,7 @@ func onJoinChannels(c *proto.Client, m *proto.Message) {
 }
 
 // onNickInUse is called whenever we receive a notification that our
-// nickname is already in use. We will attempt to re-acquire it by 
+// nickname is already in use. We will attempt to re-acquire it by
 // identifying with our password. Otherwise we will pick a new name.
 func onNickInUse(c *proto.Client, m *proto.Message) {
 	if len(config.NickservPassword) > 0 {

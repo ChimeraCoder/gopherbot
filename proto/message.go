@@ -12,7 +12,7 @@ import (
 // Message is a parsed incoming message.
 type Message struct {
 	SenderName string // Nickname of sender.
-	SenderMask string // Hostmask of sender. 
+	SenderMask string // Hostmask of sender.
 	Receiver   string // Target of message. Can be a user (our bot) or channel.
 	Data       string // Message payload.
 	Command    uint16 // Command identifier: type of message.

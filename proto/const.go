@@ -88,7 +88,7 @@ const (
 	Info            = 371 // :<string>
 	MOTD            = 372 // :- <text>
 	EndofInfo       = 374 // :End of INFO list
-	MOTDStart       = 375 // :- <server> Message of the day - 
+	MOTDStart       = 375 // :- <server> Message of the day -
 	EndOfMOTD       = 376 // :End of MOTD command
 	YouAreOper      = 381 // :You are now an IRC operator
 	Rehasing        = 382 // <config file> :Rehashing
@@ -137,7 +137,7 @@ const (
 	ErrNoPermForHost       = 463 // :Your host isn't among the privileged
 	ErrPasswordMismatch    = 464 // :Password incorrect
 	ErrYouAreBanned        = 465 // :You are banned from this server
-	ErrYouWillBeBanned     = 466 //  
+	ErrYouWillBeBanned     = 466 //
 	ErrKeySet              = 467 // <channel> :Channel key already set
 	ErrChannelIsFull       = 471 // <channel> :Cannot join channel (+l)
 	ErrUnknownMode         = 472 // <char> :is unknown mode char to me for <channel>
