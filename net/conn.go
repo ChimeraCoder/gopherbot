@@ -93,6 +93,6 @@ func (c *Conn) ReadLine() (data []byte, err error) {
 		return
 	}
 
-	data = bytes.TrimSpace(data[:len(data)-1])
+	data = bytes.TrimSpace(data)
 	return
 }
