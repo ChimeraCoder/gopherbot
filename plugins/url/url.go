@@ -5,6 +5,8 @@ package url
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/ChimeraCoder/anaconda"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
@@ -19,6 +21,7 @@ import (
 
 //This regex will check if a URL points to a Twitter status
 var twitterUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?twitter.com\/[A-Za-z0-9]*\/status\/([0-9]+)`)
+var githubUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?github.com\/(\w+)\/(\w+)`)
 
 var api *anaconda.TwitterApi
 
@@ -86,9 +89,13 @@ func (p *Plugin) parseURL(c *proto.Client, m *proto.Message) {
 	for _, url := range list {
 		//TODO make this less hackny
 		if twitterUrlRegex.MatchString(url) {
+			log.Printf("Matching twitter url")
 			go fetchTweet(c, m, url)
-
+		} else if githubUrlRegex.MatchString(url) {
+			log.Printf("Matching Github url")
+			go fetchGithubRepo(c, m, url)
 		} else if !p.excluded(url) {
+			log.Printf("Matching default url")
 			go fetchTitle(c, m, url)
 		}
 	}
@@ -155,6 +162,32 @@ func fetchTweet(c *proto.Client, m *proto.Message, url string) {
 	}
 	c.PrivMsg(m.Receiver, "%s's tweet shows: %s",
 		m.SenderName, html.UnescapeString(tweet.Text))
+}
+
+func fetchGithubRepo(c *proto.Client, m *proto.Message, url string) {
+	matches := githubUrlRegex.FindStringSubmatch(url)
+	if len(matches) != 4 {
+		log.Printf("Expected %d Github matches and found %d", 4, len(matches))
+		return
+	}
+	apiUrl := fmt.Sprintf("https://api.github.com/repos/%s/%s", matches[2], matches[3])
+	resp, err := http.Get(apiUrl)
+	if err != nil {
+		log.Printf("Error querying: %s, %s", apiUrl, err)
+		return
+	}
+	bts, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("ERROR reading response to %s: %s", apiUrl, err)
+		return
+	}
+	var result Repository
+	err = json.Unmarshal(bts, &result)
+	if err != nil {
+		log.Printf("ERROR unmarshalling response to %s: %s", apiUrl, err)
+		return
+	}
+	c.PrivMsg(m.Receiver, "%s's respository is: %s", m.SenderName, result.Description)
 }
 
 func init() {
