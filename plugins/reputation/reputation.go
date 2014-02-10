@@ -5,6 +5,7 @@ package reputation
 
 import (
 	"github.com/garyburd/redigo/redis"
+    "strconv"
 	"github.com/jteeuwen/ircb/plugin"
 	"github.com/jteeuwen/ircb/proto"
 	"log"
@@ -107,6 +108,7 @@ func (p *Plugin) excluded(url string) bool {
 func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 	entity := match[2]
 	action := match[1]
+    action_words  := " is in limbo"
 	switch action {
 	case "++":
 		log.Printf("incrementing %s", entity)
@@ -114,41 +116,48 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 		if err != nil {
 			log.Print(err)
 		}
+        action_words = " gained 1 rep"
 	case "--":
 		log.Printf("decrementing %s", entity)
 		_, err := red.Do("DECR", entity)
 		if err != nil {
 			log.Print(err)
 		}
+        action_words = " lost 1 rep"
 	default:
 		log.Printf("action %s not supported", action)
 		return
 	}
+    
+    rep, err := red.Do("GET", entity)
+    if err != nil{
+        log.Printf("ERROR: %s", err)
+        return
+    }
+    rep_b, ok := rep.([]byte)
+    if !ok{
+        log.Printf("ERROR: not a byte slice type: %v", rep)
+        return
+    }
+    log.Printf("Fetched %s", string(rep_b))
+    rep_i, err := strconv.Atoi(string(rep_b))
+    if err != nil{
+        log.Printf("Error converting to integer %s", err)
+        return
+    }
 
-	c.PrivMsg(m.Receiver, "%s's link shows: %s", m.SenderName, "modified")
-}
-
-func modifyReputation(entity string, delta int) {
-	reputationChanges <- RepChange{entity, delta}
-}
-
-func monitorReputationChanges() {
-	for {
-		select {
-		case change := <-reputationChanges:
-			entity := change.entity
-			delta := change.delta
-			reputation[entity] = reputation[entity] + delta
-			// TODO implement "getter"
-		}
-	}
+    c.PrivMsg(m.Receiver, "%s %s! rep: %d", entity, action_words, rep_i)
 }
 
 func init() {
 	var err error
-	reputationChanges = make(chan RepChange)
 	red, err = redis.Dial(os.Getenv("REDIS_NETWORK"), os.Getenv("REDIS_ADDRESS"))
 	if err != nil {
 		log.Printf("ERROR: Failed to connect to redis database - reputation plugin will NOT load")
+        panic(err)
 	}
+    _, err = red.Do("AUTH", os.Getenv("REDIS_PASSWORD"))
+    if err != nil{
+        panic(err)
+    }
 }
