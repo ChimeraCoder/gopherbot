@@ -21,7 +21,7 @@ import (
 
 //This regex will check if a URL points to a Twitter status
 var twitterUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?twitter.com\/[A-Za-z0-9]*\/status\/([0-9]+)`)
-var githubUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?github.com\/(\w+)\/(\w+)`)
+var githubUrlRegex = regexp.MustCompile(`https?:\/\/(www\.)?github.com\/(\w+)\/(\w+)\/?[\s$]`)
 
 var api *anaconda.TwitterApi
 
