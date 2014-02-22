@@ -124,6 +124,9 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 			log.Print(err)
 		}
 		action_words = "lost 1 rep"
+	case "rep":
+		action_words = "has rep"
+
 	default:
 		log.Printf("action %s not supported", action)
 		return
