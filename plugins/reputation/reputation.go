@@ -6,6 +6,7 @@ package reputation
 import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/jteeuwen/ircb/plugin"
+    "strings"
 	"github.com/jteeuwen/ircb/proto"
 	"log"
 	"os"
@@ -106,7 +107,7 @@ func (p *Plugin) excluded(url string) bool {
 
 // fetchTitle attempts to retrieve the title element for a given url.
 func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
-	entity := match[2]
+	entity := strings.ToLower(match[2])
 	action := match[1]
 	action_words := " is in limbo"
 	switch action {
