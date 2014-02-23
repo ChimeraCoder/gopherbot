@@ -41,7 +41,7 @@ type Plugin struct {
 func New(profile string) plugin.Plugin {
 	p := new(Plugin)
 	p.Base = plugin.New(profile, "url")
-	p.sexpr = regexp.MustCompile(`\((\+\+|--) (.*?)\)`)
+	p.sexpr = regexp.MustCompile(`\((\+\+|--|rep) (.*?)\)`)
 	return p
 }
 
