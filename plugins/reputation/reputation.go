@@ -6,12 +6,14 @@ package reputation
 import (
 	"github.com/garyburd/redigo/redis"
 	"github.com/jteeuwen/ircb/plugin"
-    "strings"
 	"github.com/jteeuwen/ircb/proto"
 	"log"
+	"math/rand"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
+	"time"
 )
 
 type RepChange struct {
@@ -42,7 +44,8 @@ type Plugin struct {
 func New(profile string) plugin.Plugin {
 	p := new(Plugin)
 	p.Base = plugin.New(profile, "url")
-	p.sexpr = regexp.MustCompile(`\((\+\+|--|rep) (.*?)\)`)
+	/* \S means NOT whitespace, ?: is a non-capture group */
+	p.sexpr = regexp.MustCompile(`\((\+\+|--|rep|1\+|1-|1\?)[\s]+([\S]+?)(?:[\s]+?)\)`)
 	return p
 }
 
@@ -105,52 +108,118 @@ func (p *Plugin) excluded(url string) bool {
 	return false
 }
 
-// fetchTitle attempts to retrieve the title element for a given url.
+/* @todo check "reserved" keywords such as top/bottom */
+func incrementReputation(c *proto.Client, m *proto.Message, entity string) {
+	log.Printf("incrementing %s", entity)
+	rep, err := red.Do("ZINCRBY", "reputation", "1", entity)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	c.PrivMsg(m.Receiver, "%s gained 1 rep! rep: %s",
+		entity, string(rep.([]byte)))
+}
+
+func decrementReputation(c *proto.Client, m *proto.Message, entity string) {
+	log.Printf("decrementing %s", entity)
+	rep, err := red.Do("ZINCRBY", "reputation", "-1", entity)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	c.PrivMsg(m.Receiver, "%s lost 1 rep! rep: %s",
+		entity, string(rep.([]byte)))
+}
+
+func checkReputation(c *proto.Client, m *proto.Message, entity string) {
+	log.Printf("checking %s", entity)
+	rep, err := red.Do("ZSCORE", "reputation", entity)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	if rep == nil {
+		c.PrivMsg(m.Receiver, "never heard of %s", entity)
+		return
+	}
+
+	c.PrivMsg(m.Receiver, "%s has rep: %s", entity, string(rep.([]byte)))
+}
+
+func printResponseReputationList(c *proto.Client, m *proto.Message,
+	resp interface{}) {
+	values, err := redis.Values(resp, nil)
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	var reps []struct {
+		Name  string
+		Score int
+	}
+	err = redis.ScanSlice(values, &reps)
+	for i, rep := range reps {
+		c.PrivMsg(m.Receiver, "(%d) %-10s: %3d", i, rep.Name, rep.Score)
+	}
+}
+
+func listTopReputation(c *proto.Client, m *proto.Message) {
+	resp, err := red.Do("ZREVRANGE", "reputation", "0", "4", "WITHSCORES")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	c.PrivMsg(m.Receiver, "Top Reputations:")
+	printResponseReputationList(c, m, resp)
+}
+
+func listBotReputation(c *proto.Client, m *proto.Message) {
+	resp, err := red.Do("ZRANGE", "reputation", "0", "4", "WITHSCORES")
+	if err != nil {
+		log.Print(err)
+		return
+	}
+	c.PrivMsg(m.Receiver, "Bottom Reputations:")
+	printResponseReputationList(c, m, resp)
+}
+
 func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 	entity := strings.ToLower(match[2])
 	action := match[1]
-	action_words := " is in limbo"
-	switch action {
-	case "++":
-		log.Printf("incrementing %s", entity)
-		_, err := red.Do("INCR", entity)
-		if err != nil {
-			log.Print(err)
-		}
-		action_words = "gained 1 rep"
-	case "--":
-		log.Printf("decrementing %s", entity)
-		_, err := red.Do("DECR", entity)
-		if err != nil {
-			log.Print(err)
-		}
-		action_words = "lost 1 rep"
-	case "rep":
-		action_words = "has rep"
 
+	switch action {
+	case "1+":
+		fallthrough
+	case "++":
+		incrementReputation(c, m, entity)
+
+	case "1-":
+		fallthrough
+	case "--":
+		decrementReputation(c, m, entity)
+
+	case "1?":
+		log.Printf("random %s", entity)
+		if rand.Intn(2) == 0 {
+			incrementReputation(c, m, entity)
+		} else {
+			decrementReputation(c, m, entity)
+		}
+
+	case "rep":
+		strconv.Atoi("lol")
+		if entity == "top" {
+			listTopReputation(c, m)
+		} else if entity == "bot" {
+			listBotReputation(c, m)
+		} else {
+			checkReputation(c, m, entity)
+		}
 	default:
 		log.Printf("action %s not supported", action)
 		return
 	}
 
-	rep, err := red.Do("GET", entity)
-	if err != nil {
-		log.Printf("ERROR: %s", err)
-		return
-	}
-	rep_b, ok := rep.([]byte)
-	if !ok {
-		log.Printf("ERROR: not a byte slice type: %v", rep)
-		return
-	}
-	log.Printf("Fetched %s", string(rep_b))
-	rep_i, err := strconv.Atoi(string(rep_b))
-	if err != nil {
-		log.Printf("Error converting to integer %s", err)
-		return
-	}
-
-	c.PrivMsg(m.Receiver, "%s %s! rep: %d", entity, action_words, rep_i)
 }
 
 func init() {
@@ -164,4 +233,5 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	rand.Seed(time.Now().UTC().UnixNano())
 }
