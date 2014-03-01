@@ -14,10 +14,10 @@ import (
 	"os"
 	"path/filepath"
 
+	_ "github.com/ChimeraCoder/gopherbot/plugins/reputation"
 	_ "github.com/ChimeraCoder/gopherbot/plugins/url"
 	_ "github.com/jteeuwen/ircb/plugins/admin"
 	_ "github.com/jteeuwen/ircb/plugins/dict"
-	_ "github.com/ChimeraCoder/gopherbot/plugins/reputation"
 )
 
 func main() {
