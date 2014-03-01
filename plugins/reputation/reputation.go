@@ -11,7 +11,6 @@ import (
 	"math/rand"
 	"os"
 	"regexp"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -45,7 +44,7 @@ func New(profile string) plugin.Plugin {
 	p := new(Plugin)
 	p.Base = plugin.New(profile, "url")
 	/* \S means NOT whitespace, ?: is a non-capture group */
-	p.sexpr = regexp.MustCompile(`\((\+\+|--|rep|1\+|1-|1\?)[\s]+([\S]+?)(?:[\s]+?)\)`)
+	p.sexpr = regexp.MustCompile(`\((\+\+|--|rep|1\+|1-|1\?)[\s]+([\S]+?)(?:[\s]+?)?\)`)
 	return p
 }
 
@@ -187,6 +186,11 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 	entity := strings.ToLower(match[2])
 	action := match[1]
 
+    /* @hack until we get a real parser */
+    if action != "rep" && strings.HasPrefix(entity, ":") {
+        return
+    }
+
 	switch action {
 	case "1+":
 		fallthrough
@@ -207,10 +211,9 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 		}
 
 	case "rep":
-		strconv.Atoi("lol")
-		if entity == "top" {
+		if entity == ":top" {
 			listTopReputation(c, m)
-		} else if entity == "bot" {
+		} else if entity == ":bot" {
 			listBotReputation(c, m)
 		} else {
 			checkReputation(c, m, entity)
@@ -218,7 +221,7 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 	default:
 		log.Printf("action %s not supported", action)
 		return
-	}
+    }
 
 }
 
