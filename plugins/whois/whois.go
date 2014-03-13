@@ -132,7 +132,7 @@ func whoIs(c *proto.Client, m *proto.Message, match []string) {
 			break
 		}
 
-		response = fmt.Sprintf("%s is %s", entity, string(descriptor))
+		response = fmt.Sprintf("%s is %s", entity, string(descriptor)+"...")
 	default:
 		if match[4] != "is" {
 			log.Printf("action %s not supported", match[3])
@@ -140,7 +140,7 @@ func whoIs(c *proto.Client, m *proto.Message, match []string) {
 		}
 		entity = match[5]
 		descriptor := match[6]
-		_, err := red.Do("SET", entity+WHOIS_SUFFIX, descriptor)
+		_, err := red.Do("APPEND", entity+WHOIS_SUFFIX, descriptor+", ")
 		if err != nil {
 			log.Print(err)
 			return
