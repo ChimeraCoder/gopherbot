@@ -186,10 +186,10 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 	entity := strings.ToLower(match[2])
 	action := match[1]
 
-    /* @hack until we get a real parser */
-    if action != "rep" && strings.HasPrefix(entity, ":") {
-        return
-    }
+	/* @hack until we get a real parser */
+	if action != "rep" && strings.HasPrefix(entity, ":") {
+		return
+	}
 
 	switch action {
 	case "1+":
@@ -221,7 +221,7 @@ func scoreReputation(c *proto.Client, m *proto.Message, match []string) {
 	default:
 		log.Printf("action %s not supported", action)
 		return
-    }
+	}
 
 }
 
