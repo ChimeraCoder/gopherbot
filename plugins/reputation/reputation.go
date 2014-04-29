@@ -90,7 +90,8 @@ func (p *Plugin) parseSexpr(c *proto.Client, m *proto.Message) {
 	}
 
 	for _, sexpr := range list {
-		if !p.excluded(sexpr[0]) {
+		log.Printf("Received sexpr from %s", m.SenderName)
+		if !p.excluded(sexpr[0]) && m.SenderName != "manyabot" {
 			go scoreReputation(c, m, sexpr)
 		}
 	}
