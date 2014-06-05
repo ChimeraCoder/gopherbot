@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 
+	_ "github.com/ChimeraCoder/gopherbot/plugins/describe"
 	_ "github.com/ChimeraCoder/gopherbot/plugins/reputation"
 	_ "github.com/ChimeraCoder/gopherbot/plugins/url"
 	_ "github.com/ChimeraCoder/gopherbot/plugins/whois"
