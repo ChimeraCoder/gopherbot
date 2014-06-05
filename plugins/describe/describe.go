@@ -11,6 +11,8 @@ import (
 	"regexp"
 )
 
+const otherBotUsername = "manyabot"
+
 //This regex will check if a URL points to a Twitter status
 var descriptionRegex = regexp.MustCompile(`ACTION is (.*)`)
 
@@ -67,7 +69,6 @@ func (p *Plugin) Load(c *proto.Client) (err error) {
 
 // parseURL looks for descriptions in incoming messages.
 func (p *Plugin) parseDescription(c *proto.Client, m *proto.Message) {
-	log.Printf("Checking %s", m.Data)
 	list := p.description.FindStringSubmatch(m.Data)
 	if len(list) == 0 {
 		return
@@ -75,5 +76,5 @@ func (p *Plugin) parseDescription(c *proto.Client, m *proto.Message) {
 
 	description := list[len(list)-1]
 	log.Printf("Found description: %s", description)
-	c.PrivMsg(m.Receiver, fmt.Sprintf("%s is %s", m.SenderName, description))
+	c.PrivMsg(m.Receiver, fmt.Sprintf("%s %s is %s", otherBotUsername, m.SenderName, description))
 }
