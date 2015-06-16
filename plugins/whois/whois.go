@@ -154,7 +154,7 @@ func init() {
 	var err error
 	red, err = redis.Dial(os.Getenv("REDIS_NETWORK"), os.Getenv("REDIS_ADDRESS"))
 	if err != nil {
-		log.Printf("ERROR: Failed to connect to redis database - reputation plugin will NOT load")
+		log.Printf("ERROR: Failed to connect to redis database - whois plugin will NOT load")
 		return
 	}
 	_, err = red.Do("AUTH", os.Getenv("REDIS_PASSWORD"))
