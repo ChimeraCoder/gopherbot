@@ -6,8 +6,8 @@ package reputation
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
-	"github.com/jteeuwen/ircb/plugin"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/plugin"
+	"github.com/chimeracoder/gopherbot/proto"
 	"log"
 	"os"
 	"regexp"

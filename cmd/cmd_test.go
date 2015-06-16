@@ -5,7 +5,7 @@ package cmd
 
 import (
 	"bytes"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/proto"
 	"testing"
 )
 

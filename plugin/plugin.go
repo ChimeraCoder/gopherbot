@@ -5,7 +5,7 @@ package plugin
 
 import (
 	"github.com/jteeuwen/ini"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/proto"
 	"log"
 	"path/filepath"
 )

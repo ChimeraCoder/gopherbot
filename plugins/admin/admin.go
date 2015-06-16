@@ -4,10 +4,10 @@
 package admin
 
 import (
-	"github.com/jteeuwen/ircb/cmd"
-	"github.com/jteeuwen/ircb/irc"
-	"github.com/jteeuwen/ircb/plugin"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/cmd"
+	"github.com/chimeracoder/gopherbot/irc"
+	"github.com/chimeracoder/gopherbot/plugin"
+	"github.com/chimeracoder/gopherbot/proto"
 )
 
 func init() { plugin.Register(New) }

@@ -4,8 +4,8 @@
 package main
 
 import (
-	"github.com/jteeuwen/ircb/cmd"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/cmd"
+	"github.com/chimeracoder/gopherbot/proto"
 	"log"
 	"strings"
 )
