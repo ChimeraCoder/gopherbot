@@ -26,7 +26,6 @@ var reputationChanges chan RepChange
 
 var red redis.Conn
 
-func init() { plugin.Register(New) }
 
 type Plugin struct {
 	*plugin.Base
@@ -231,11 +230,12 @@ func init() {
 	red, err = redis.Dial(os.Getenv("REDIS_NETWORK"), os.Getenv("REDIS_ADDRESS"))
 	if err != nil {
 		log.Printf("ERROR: Failed to connect to redis database - reputation plugin will NOT load")
-		panic(err)
+		return
 	}
 	_, err = red.Do("AUTH", os.Getenv("REDIS_PASSWORD"))
 	if err != nil {
-		panic(err)
+		return
 	}
 	rand.Seed(time.Now().UTC().UnixNano())
+	plugin.Register(New)
 }

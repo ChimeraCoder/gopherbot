@@ -28,7 +28,6 @@ var red redis.Conn
 const WHOIS_DB = "2"
 const WHOIS_SUFFIX = "-whois" // TODO remove this hack
 
-func init() { plugin.Register(New) }
 
 type Plugin struct {
 	*plugin.Base
@@ -156,10 +155,11 @@ func init() {
 	red, err = redis.Dial(os.Getenv("REDIS_NETWORK"), os.Getenv("REDIS_ADDRESS"))
 	if err != nil {
 		log.Printf("ERROR: Failed to connect to redis database - reputation plugin will NOT load")
-		panic(err)
+		return
 	}
 	_, err = red.Do("AUTH", os.Getenv("REDIS_PASSWORD"))
 	if err != nil {
-		panic(err)
+		return
 	}
+	plugin.Register(New)
 }
