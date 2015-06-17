@@ -6,7 +6,7 @@ package main
 import (
 	"fmt"
 	"github.com/jteeuwen/ini"
-	"github.com/jteeuwen/ircb/irc"
+	"github.com/chimeracoder/gopherbot/irc"
 	"strings"
 	"sync/atomic"
 	"unsafe"

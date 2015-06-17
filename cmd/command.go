@@ -4,7 +4,7 @@
 package cmd
 
 import (
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/proto"
 	"strings"
 )
 

@@ -6,9 +6,9 @@ package weather
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jteeuwen/ircb/cmd"
-	"github.com/jteeuwen/ircb/plugin"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/cmd"
+	"github.com/chimeracoder/gopherbot/plugin"
+	"github.com/chimeracoder/gopherbot/proto"
 	"io/ioutil"
 	"log"
 	"net/http"

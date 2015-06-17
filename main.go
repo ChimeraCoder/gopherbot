@@ -6,10 +6,10 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/jteeuwen/ircb/cmd"
-	"github.com/jteeuwen/ircb/net"
-	"github.com/jteeuwen/ircb/plugin"
-	"github.com/jteeuwen/ircb/proto"
+	"github.com/chimeracoder/gopherbot/cmd"
+	"github.com/chimeracoder/gopherbot/net"
+	"github.com/chimeracoder/gopherbot/plugin"
+	"github.com/chimeracoder/gopherbot/proto"
 	"log"
 	"os"
 	"path/filepath"
@@ -17,8 +17,8 @@ import (
 	_ "github.com/ChimeraCoder/gopherbot/plugins/reputation"
 	_ "github.com/ChimeraCoder/gopherbot/plugins/url"
 	_ "github.com/ChimeraCoder/gopherbot/plugins/whois"
-	_ "github.com/jteeuwen/ircb/plugins/admin"
-	_ "github.com/jteeuwen/ircb/plugins/dict"
+	_ "github.com/chimeracoder/gopherbot/plugins/admin"
+	_ "github.com/chimeracoder/gopherbot/plugins/dict"
 )
 
 func main() {
